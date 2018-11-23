@@ -19,10 +19,16 @@ echo_ok
 
 echo -n "- Installing crontab file..."
 echo_running
-deploycron_file "${MODULE_RUNTIME_HOME}/tmp/config_auto/crontab"
-if test $? -eq 0; then
-    echo_ok
+
+if hash crontab 2>/dev/null; then
+    deploycron_file "${MODULE_RUNTIME_HOME}/tmp/config_auto/crontab" >"${MODULE_RUNTIME_HOME}/tmp/deploycron_errors.$$" 2>&1
+    if test $? -eq 0; then
+        echo_ok
+        rm -f "${MODULE_RUNTIME_HOME}/tmp/deploycron_errors.$$"
+    else
+        echo_nok "(can't install)"
+        echo_bold "ERROR: see ${MODULE_RUNTIME_HOME}/tmp/deploycron_errors.$$ for details"
+    fi
 else
-    echo_nok
-    exit 1
+    echo_warning "(no crontab installed)"
 fi
