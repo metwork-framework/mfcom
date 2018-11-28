@@ -68,6 +68,11 @@ if os.path.isdir(args.plugin):
 extra_context = {"name": args.plugin}
 res = cookiecutter(template_path, extra_context=extra_context,
                    no_input=args.no_input)
+
+if not os.path.isdir(res):
+    print("ERROR : cookiecutter result is not a valid directory")
+    parser.exit(1)
+
 if MODULE == "MFDATA":
     # FIXME: why chmod +x *.py ???
     get_bash_output_or_die("cd %s && chmod +x *.py && "
@@ -90,7 +95,9 @@ if args.make:
                 b = bash("plugins.install %s" % fic)
                 print("%s" % b.stdout)
                 if b.code != 0:
-                    print("PLUGIN INSTALL ERROR")
+                    print("Plugin directory %s successfully created"
+                          % res)
+                    print("but PLUGIN INSTALL ERROR")
                     print("%s" % b.stderr)
                     sys.exit(1)
 
@@ -103,6 +110,14 @@ if args.make:
             shutil.rmtree("%s/%s" % (os.getcwd(), args.plugin))
 
     else:
-        print("MAKE ERROR")
+        print("Plugin directory %s successfully created" % res)
+        print("but MAKE ERROR")
         print("%s" % b.stderr)
         sys.exit(1)
+
+print("Plugin %s successfully created on directory %s" %
+      (args.plugin, res))
+plugins_guide = "https://github.com/metwork-framework" + \
+    "/resources/blob/master/documents/plugins_guide.md"
+print("You can read the metwork-framework Plugins guide at \n    %s" %
+      plugins_guide)
