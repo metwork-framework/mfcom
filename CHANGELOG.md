@@ -15,6 +15,7 @@
 
 ### Features
 
+* Add a "plugin succesfully created message" ([8e86e1f](https://github.com/metwork-framework/mfcom/commit/8e86e1f)), closes [#66](https://github.com/metwork-framework/mfcom/issues/66)
 * add a no-input option ([a21a8d3](https://github.com/metwork-framework/mfcom/commit/a21a8d3))
 * add get_file_size function in synutil_lua ([8143d08](https://github.com/metwork-framework/mfcom/commit/8143d08))
 * better plugin build ([24a484d](https://github.com/metwork-framework/mfcom/commit/24a484d))
