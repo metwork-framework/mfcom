@@ -23,6 +23,7 @@ import codecs
 import re
 import argparse
 import sys
+import time
 from os import environ
 from configparser_extended import ExtendedConfigParser
 from collections import OrderedDict
@@ -152,6 +153,8 @@ def main():
         for o in res_dict[s]:
             print("export " + module.upper() + "_" + s.upper() + "_" +
                   o.upper() + "=\"" + str(res_dict[s][o]) + "\"")
+
+    print("export %s_CONF_GENERATION_TIME=%i" % (module.upper(), time.time()))
 
 
 main()
