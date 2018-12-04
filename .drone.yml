@@ -112,7 +112,7 @@ pipeline:
       event: push
       branch: [ master, release_* ]
 
-  trigger:
+  trigger_mfxxxbuildimage:
     image: metwork/drone-downstream-specific-image:latest
     secrets: [ downstream_server, downstream_token ]
     repositories:
@@ -121,6 +121,7 @@ pipeline:
       status: success
       event: push
       branch: [ master, integration, release_* ]
+
 
 
 
