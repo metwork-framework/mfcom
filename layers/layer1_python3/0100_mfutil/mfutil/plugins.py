@@ -330,7 +330,8 @@ def build_plugin(plugin_path, plugins_base_dir=None):
         parser.read_string(config_content.decode('utf-8'))
     else:
         parser.read_string(config_content)
-    name = parser['general']['name']
+    with open(os.path.join(plugin_path, ".layerapi2_label"), "r") as f:
+        name = f.read().replace('plugin_', '', 1).split('@')[0]
     version = parser['general']['version']
     summary = parser['general']['summary']
     license = parser['general']['license']
