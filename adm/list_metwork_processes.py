@@ -93,13 +93,19 @@ def get_processes(exclude_same_family=CURRENT_PROCESS, exclude_terminal=True,
 argparser = argparse.ArgumentParser(description="list metwork processes")
 argparser.add_argument("--pids-only", action="store_true",
                        help="show only pids")
+argparser.add_argument("--include-current-family", action="store_true",
+                       help="include current process family")
 argparser.add_argument("--output-format", default="text",
                        help="output format (text (default) or json")
 args = argparser.parse_args()
 if args.output_format not in ("text", "json"):
     print("ERROR: bad output format")
     sys.exit(1)
-processes = get_processes()
+
+if args.include_current_family:
+    processes = get_processes(exclude_same_family=None)
+else:
+    processes = get_processes()
 
 if args.pids_only:
     if args.output_format == 'json':
