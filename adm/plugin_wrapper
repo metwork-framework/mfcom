@@ -1,23 +1,67 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
-function usage() {
-    echo "plugin_wrapper PLUGIN_NAME COMMAND [COMMAND_ARG1] [COMMAND_ARG2] [...]"
-}
+from __future__ import print_function
+import os
+import sys
+import argparse
+from mfutil.layerapi2 import LayerApi2Wrapper
 
-if test "${1:-}" = "--help"; then
-    usage
-    exit 0
-fi
-if test "${1:-}" = "-h"; then
-    usage
-    exit 0
-fi
-if test "${1:-}" = ""; then
-    usage
-    exit 1
-fi
+DESCRIPTION = "execute a command in a plugin environment"
+MODULE = os.environ["MODULE"]
+MODULE_LOWERCASE = os.environ["MODULE_LOWERCASE"]
 
-PLUGIN_NAME=${1:-}
-shift
 
-exec layer_wrapper --empty --extra-env-prefix="${MODULE}_CURRENT_PLUGIN" --layers="plugin_${PLUGIN_NAME}@${MODULE_LOWERCASE}" -- $@
+parser = argparse.ArgumentParser(description=DESCRIPTION)
+parser.add_argument("--do-not-add-plugin-dir-to-python-path",
+                    action="store_true",
+                    help="do not add plugin directory to PYTHONPATH")
+parser.add_argument("--do-not-add-plugin-dir-to-node-path",
+                    action="store_true",
+                    help="do not add plugin directory to NODE_PATH")
+parser.add_argument("--do-not-add-lib-subdir-to-python-path",
+                    action='store_true',
+                    help="do not add lib subdir to PYTHONPATH")
+parser.add_argument("--do-not-add-lib-subdir-to-node-path",
+                    action='store_true',
+                    help="do not add lib subdir to NODE_PATH")
+parser.add_argument("--add-extra-dir-to-python-path", default=None, type=str,
+                    help="add a custom dir to PYTHONPATH")
+parser.add_argument("--add-extra-dir-to-node-path", default=None, type=str,
+                    help="add a custom dir to NODE_PATH")
+parser.add_argument("PLUGIN_NAME", type=str,
+                    help="plugin name")
+parser.add_argument("COMMAND_AND_ARGS", nargs='+',
+                    help="command (and args )to execute")
+args = parser.parse_args()
+plugin = args.PLUGIN_NAME
+layer_name = "plugin_%s@%s" % (plugin, MODULE_LOWERCASE)
+layer_dir = LayerApi2Wrapper.get_layer_home(layer_name)
+if layer_dir is None:
+    print("ERROR: the plugin %s (full layer name: %s) does not seem to be "
+          "installed/available" % (plugin, layer_name), file=sys.stderr)
+    sys.exit(1)
+
+lw_args = ["--empty",
+           "--extra-env-prefix=%s_CURRENT_PLUGIN" % MODULE,
+           "--layers=%s" % layer_name]
+if args.do_not_add_plugin_dir_to_python_path is not True:
+    lw_args.append("--prepend-env=PYTHONPATH,%s" % layer_dir)
+if args.do_not_add_plugin_dir_to_node_path is not True:
+    lw_args.append("--prepend-env=NODE_PATH,%s" % layer_dir)
+if args.add_extra_dir_to_python_path is not None:
+    lw_args.append("--prepend-env=PYTHONPATH,%s" %
+                   args.add_extra_dir_to_python_path)
+if args.add_extra_dir_to_node_path is not None:
+    lw_args.append("--prepend-env=NODE_PATH,%s" %
+                   args.add_extra_dir_to_node_path)
+if os.path.isdir("%s/lib" % layer_dir):
+    if args.do_not_add_lib_subdir_to_python_path is not True:
+        lw_args.append("--prepend-env=PYTHONPATH,%s/lib" % layer_dir)
+    if args.do_not_add_lib_subdir_to_node_path is not True:
+        lw_args.append("--prepend-env=NODE_PATH,%s/lib" % layer_dir)
+
+lw_args.append("--")
+for cmd_arg in args.COMMAND_AND_ARGS:
+    lw_args.append(cmd_arg)
+
+os.execvp("layer_wrapper", lw_args)
