@@ -9,6 +9,7 @@ import hashlib
 import envtpl
 from mfutil import BashWrapperException, BashWrapperOrRaise, BashWrapper
 from mfutil import mkdir_p_or_die, get_unique_hexa_identifier
+from mfutil.layerapi2 import LayerApi2Wrapper
 from configparser_extended import ExtendedConfigParser
 
 RUNTIME_HOME = os.environ.get('MODULE_RUNTIME_HOME', '/tmp')
@@ -17,6 +18,32 @@ MODULE_LOWERCASE = os.environ['MODULE_LOWERCASE']
 SPEC_TEMPLATE = os.path.join(MFEXT_HOME, "share", "templates", "plugin.spec")
 
 # FIXME: doc
+
+
+def plugin_name_to_layerapi2_label(plugin_name):
+    return "plugin_%s@%s" % (plugin_name, MODULE_LOWERCASE)
+
+
+def layerapi2_label_to_plugin_name(label):
+    if (not label.startswith("plugin_")) or \
+            (not label.endswith("@%s" % MODULE_LOWERCASE)):
+        raise Exception("bad layerapi2_label: %s => is it really a plugin ?" %
+                        label)
+    return label[7:].split('@')[0]
+
+
+def get_layer_home_from_plugin_name(plugin_name):
+    label = plugin_name_to_layerapi2_label(plugin_name)
+    return LayerApi2Wrapper.get_layer_home(label)
+
+
+def layerapi2_label_file_to_plugin_name(llf_path):
+    try:
+        with open(llf_path, 'r') as f:
+            c = f.read().strip()
+    except Exception:
+        raise Exception("can't read %s file" % llf_path)
+    return layerapi2_label_to_plugin_name(c)
 
 
 class MFUtilPluginAlreadyInstalled(Exception):
@@ -168,18 +195,29 @@ def get_installed_plugins(plugins_base_dir=None):
     for line in tmp:
         tmp2 = line.split('~~~')
         if len(tmp2) == 3:
-            result.append({'name': tmp2[0],
-                           'version': tmp2[1],
-                           'release': tmp2[2]})
+            home = get_layer_home_from_plugin_name(tmp2[0])
+            if home:
+                result.append({'name': tmp2[0],
+                               'version': tmp2[1],
+                               'release': tmp2[2],
+                               'home': home})
     for tmp in os.listdir(plugins_base_dir):
         directory_name = tmp.strip()
         if directory_name == 'base':
             continue
+        llf = os.path.join(plugins_base_dir, directory_name,
+                           ".layerapi2_label")
+        if not os.path.isfile(llf):
+            __get_logger().warning("missing %s file for installed "
+                                   "plugin directory" % llf)
+            continue
+        name = layerapi2_label_file_to_plugin_name(llf)
         directory = os.path.join(plugins_base_dir, directory_name)
         if os.path.islink(directory):
-            result.append({'name': directory_name,
+            result.append({'name': name,
                            'version': 'dev_link',
-                           'release': 'dev_link'})
+                           'release': 'dev_link',
+                           'home': directory})
     return result
 
 
@@ -193,12 +231,14 @@ def uninstall_plugin(name, plugins_base_dir=None,
         raise MFUtilPluginNotInstalled("plugin %s is not installed" % name)
     version = infos['metadatas']['version']
     release = infos['metadatas']['release']
+    home = infos.get('home', None)
     if release == 'dev_link':
         preuninstall_status = _preuninstall_plugin(name, version, release,
                                                    quiet=quiet)
         if not preuninstall_status and not ignore_errors:
             raise MFUtilPluginCantUninstall("can't uninstall plugin %s" % name)
-        os.unlink(os.path.join(plugins_base_dir, name))
+        if home:
+            os.unlink(home)
         return
     preuninstall_status = _preuninstall_plugin(name, version, release)
     if not preuninstall_status and not ignore_errors:
@@ -211,13 +251,14 @@ def uninstall_plugin(name, plugins_base_dir=None,
     except MFUtilPluginCantUninstall:
         if not ignore_errors:
             raise
-    shutil.rmtree(os.path.join(plugins_base_dir, name), ignore_errors=True)
+    if home:
+        shutil.rmtree(home, ignore_errors=True)
     infos = get_plugin_info(name, mode="name",
                             plugins_base_dir=plugins_base_dir)
     if infos is not None:
         raise MFUtilPluginCantUninstall("can't uninstall plugin %s" % name,
                                         bash_wrapper=x)
-    if os.path.exists(os.path.join(plugins_base_dir, name)):
+    if home and os.path.exists(home):
         raise MFUtilPluginCantUninstall("can't uninstall plugin %s "
                                         "(directory still here)" % name)
 
@@ -313,8 +354,11 @@ def develop_plugin(plugin_path, name, plugins_base_dir=None,
 
 
 def _is_dev_link_plugin(name, plugins_base_dir=None):
+    home = get_layer_home_from_plugin_name(name)
+    if home is None:
+        return False
     plugins_base_dir = _get_plugins_base_dir(plugins_base_dir)
-    return os.path.islink(os.path.join(plugins_base_dir, name))
+    return os.path.islink(home)
 
 
 def build_plugin(plugin_path, plugins_base_dir=None):
@@ -395,6 +439,7 @@ def get_plugin_info(name_or_filepath, mode="auto", plugins_base_dir=None):
             res['raw_metadata_output'] = 'DEV LINK'
             res['raw_files_output'] = 'DEV LINK'
             res['files'] = []
+            res['home'] = get_layer_home_from_plugin_name(name_or_filepath)
             return res
         cmd = _get_rpm_cmd('-qi', name_or_filepath,
                            plugins_base_dir=plugins_base_dir)
@@ -414,6 +459,9 @@ def get_plugin_info(name_or_filepath, mode="auto", plugins_base_dir=None):
         if 'metadatas' not in res:
             res['metadatas'] = {}
         res['metadatas'][name] = value
+    if mode == "name":
+        res["home"] = \
+            get_layer_home_from_plugin_name(name_or_filepath)
     if mode == "file":
         cmd = _get_rpm_cmd('-ql -p %s' % name_or_filepath,
                            plugins_base_dir=plugins_base_dir)

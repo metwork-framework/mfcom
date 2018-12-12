@@ -2,7 +2,7 @@
 
 import six
 from mfutil.glib2 import Glib2Wrapper
-from ctypes import cdll, c_char_p, POINTER, c_char, cast
+from ctypes import cdll, c_char_p, POINTER, c_char, cast, c_int
 
 
 class LayerApi2Wrapper(object):
@@ -17,6 +17,14 @@ class LayerApi2Wrapper(object):
                 [c_char_p]
             LayerApi2Wrapper.__lib.layerapi2_get_layer_home.restype = \
                 POINTER(c_char)
+            LayerApi2Wrapper.__lib.layerapi2_init.argtypes = [c_int]
+            LayerApi2Wrapper.__lib.layerapi2_init.restype = None
+            LayerApi2Wrapper.__lib.layerapi2_destroy.argtypes = []
+            LayerApi2Wrapper.__lib.layerapi2_destroy.restype = None
+            LayerApi2Wrapper.__lib.layerapi2_init(0)
+        # We do this each time to avoid cache issues when creating layers
+        LayerApi2Wrapper.__lib.layerapi2_destroy()
+        LayerApi2Wrapper.__lib.layerapi2_init(0)
 
     @staticmethod
     def get_layer_home(label):
