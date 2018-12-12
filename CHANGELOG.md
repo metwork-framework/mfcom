@@ -16,11 +16,15 @@
 ### Features
 
 * Add a "plugin succesfully created message" ([8e86e1f](https://github.com/metwork-framework/mfcom/commit/8e86e1f)), closes [#66](https://github.com/metwork-framework/mfcom/issues/66)
+* add a list_metwork_processes util ([9b6745b](https://github.com/metwork-framework/mfcom/commit/9b6745b)), closes [metwork-framework/resources#22](https://github.com/metwork-framework/resources/issues/22)
 * add a no-input option ([a21a8d3](https://github.com/metwork-framework/mfcom/commit/a21a8d3))
+* add a telegraf plugin to collect informations about metwork ([f39626f](https://github.com/metwork-framework/mfcom/commit/f39626f)), closes [metwork-framework/resources#22](https://github.com/metwork-framework/resources/issues/22)
 * add get_file_size function in synutil_lua ([8143d08](https://github.com/metwork-framework/mfcom/commit/8143d08))
+* add new layerapi2 python wrapper ([9e23b59](https://github.com/metwork-framework/mfcom/commit/9e23b59))
 * better plugin build ([24a484d](https://github.com/metwork-framework/mfcom/commit/24a484d))
 * better plugin cleaning (again) ([8c84417](https://github.com/metwork-framework/mfcom/commit/8c84417))
 * better plugin management (with errors in pre/post scripts) ([8944a95](https://github.com/metwork-framework/mfcom/commit/8944a95))
+* new plugin_wrapper (with options) ([0272488](https://github.com/metwork-framework/mfcom/commit/0272488)), closes [metwork-framework/resources#24](https://github.com/metwork-framework/resources/issues/24)
 * publish conf generation time as an env var ([ca04ab2](https://github.com/metwork-framework/mfcom/commit/ca04ab2)), closes [metwork-framework/resources#10](https://github.com/metwork-framework/resources/issues/10)
 
 
