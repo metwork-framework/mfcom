@@ -64,7 +64,7 @@ def get_processes(exclude_same_family=CURRENT_PROCESS, exclude_terminal=True,
             metwork_plugin_name = env[CURRENT_PLUGIN_ENV_VAR]
         else:
             metwork_plugin_name = ""
-        if env.get('METWORK_LIST_PROCESSES_FORCE', None) == '1':
+        if env.get('METWORK_LIST_PROCESSES_FORCE', None) == MODULE:
             add_process(processes, proc, metwork_plugin_name)
             continue
         if env.get('METWORK_LIST_PROCESSES_FORCE', None) == '0':

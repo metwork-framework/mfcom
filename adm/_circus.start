@@ -37,7 +37,7 @@ fi
 echo "*****************************************************************************" >> ${MODULE_RUNTIME_HOME}/log/circus.log
 echo "`date` : STARTING circus" >> ${MODULE_RUNTIME_HOME}/log/circus.log
 echo "*****************************************************************************" >> ${MODULE_RUNTIME_HOME}/log/circus.log
-export METWORK_LIST_PROCESSES_FORCE=1
+export METWORK_LIST_PROCESSES_FORCE="${MODULE}"
 start_daemon "layer_wrapper --layers=python3_circus@mfext -- circusd ${CONFIG_FILE}" ${MODULE_RUNTIME_HOME}/log/circus.log ${MODULE_RUNTIME_HOME}/log/circus.log
 echo_ok
 
