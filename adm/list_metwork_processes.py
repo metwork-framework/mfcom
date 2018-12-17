@@ -70,7 +70,10 @@ def get_processes(exclude_same_family=CURRENT_PROCESS, exclude_terminal=True,
         if env.get('METWORK_LIST_PROCESSES_FORCE', None) == '0':
             continue
         if exclude_terminal:
-            if proc.terminal() is not None:
+            try:
+                if proc.terminal() is not None:
+                    continue
+            except psutil.Error:
                 continue
         if include_cwd_startswith is not None:
             if cwd.startswith(include_cwd_startswith):
