@@ -34,7 +34,13 @@ ifneq ("$(wildcard node_sources/package.json)","")
 endif
 LAYERS=$(shell cat .layerapi2_dependencies |tr '\n' ',' |sed 's/,$$/\n/')
 
-all: $(PREREQ) custom $(DEPLOY)
+all: .autorestart_includes .autorestart_excludes $(PREREQ) custom $(DEPLOY)
+
+.autorestart_includes:
+	cp -f $(MFCOM_HOME)/share/plugin_autorestart_includes $@
+
+.autorestart_excludes:
+	cp -f $(MFCOM_HOME)/share/plugin_autorestart_excludes $@
 
 clean::
 	rm -Rf local *.plugin *.tar.gz python?_virtualenv_sources/*.tmp python?_virtualenv_sources/src python?_virtualenv_sources/freezed_requirements.* python?_virtualenv_sources/tempolayer* tmp_build
@@ -50,9 +56,13 @@ freeze: superclean $(REQUIREMENTS3) $(REQUIREMENTS2) $(NODE_LOCK)
 
 local/lib/python$(PYTHON3_SHORT_VERSION)/site-packages/requirements3.txt: $(REQUIREMENTS3) python3_virtualenv_sources/src
 	_install_plugin_virtualenv $(NAME) $(VERSION) $(RELEASE)
+	# to force an autorestart
+	touch config.ini
 
 local/lib/python$(PYTHON2_SHORT_VERSION)/site-packages/requirements2.txt: $(REQUIREMENTS2) python2_virtualenv_sources/src
 	_install_plugin_virtualenv $(NAME) $(VERSION) $(RELEASE)
+	# to force an autorestart
+	touch config.ini
 
 python3_virtualenv_sources/requirements3.txt: python3_virtualenv_sources/requirements-to-freeze.txt
 	cd python3_virtualenv_sources && layer_wrapper --empty --layers=$(LAYERS) -- freeze_requirements requirements-to-freeze.txt >requirements3.txt
@@ -94,6 +104,8 @@ local/lib/package-lock.json: node_sources/package-lock.json node_sources/package
 	cp -f node_sources/package.json local/lib/package.json
 	cp -f node_sources/package-lock.json local/lib/package-lock.json
 	cp -Rf node_sources/node_modules local/lib/
+	# to force an autorestart
+	touch config.ini
 
 node_sources/package-lock.json: node_sources/package.json
 	rm -Rf tmp_build
