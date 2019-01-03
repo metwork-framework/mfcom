@@ -27,3 +27,4 @@ doc/layer_*.md
 doc/layer_*.rst
 doc/mflog.rst
 doc/mfutil.rst
+**.whl

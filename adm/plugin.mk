@@ -2,6 +2,8 @@ NAME:=$(shell config.py config.ini general name)
 VERSION:=$(shell config.py config.ini general version |sed "s/{{MODULE_VERSION}}/$${MODULE_VERSION}/g")
 RELEASE:=1
 
+PREREQ:=
+DEPLOY:=
 ifneq ("$(wildcard python3_virtualenv_sources/requirements-to-freeze.txt)","")
 	REQUIREMENTS3:=python3_virtualenv_sources/requirements3.txt
 else
@@ -11,8 +13,8 @@ ifneq ("$(wildcard python3_virtualenv_sources/prerequirements-to-freeze.txt)",""
 	REQUIREMENTS3:=python3_virtualenv_sources/prerequirements3.txt $(REQUIREMENTS3)
 endif
 ifneq ("$(REQUIREMENTS3)","")
-	PREREQ:=$(REQUIREMENTS3) python3_virtualenv_sources/src
-	DEPLOY:=local/lib/python$(PYTHON3_SHORT_VERSION)/site-packages/requirements3.txt
+	PREREQ+=$(REQUIREMENTS3) python3_virtualenv_sources/src
+	DEPLOY+=local/lib/python$(PYTHON3_SHORT_VERSION)/site-packages/requirements3.txt
 endif
 ifneq ("$(wildcard python2_virtualenv_sources/requirements-to-freeze.txt)","")
 	REQUIREMENTS2:=python2_virtualenv_sources/requirements2.txt
@@ -23,19 +25,22 @@ ifneq ("$(wildcard python2_virtualenv_sources/prerequirements-to-freeze.txt)",""
 	REQUIREMENTS2:=python2_virtualenv_sources/prerequirements2.txt $(REQUIREMENTS2)
 endif
 ifneq ("$(REQUIREMENTS2)","")
-	PREREQ:=$(REQUIREMENTS2) python2_virtualenv_sources/src
-	DEPLOY:=local/lib/python$(PYTHON2_SHORT_VERSION)/site-packages/requirements2.txt
+	PREREQ+=$(REQUIREMENTS2) python2_virtualenv_sources/src
+	DEPLOY+=local/lib/python$(PYTHON2_SHORT_VERSION)/site-packages/requirements2.txt
 endif
-ifneq ("$(wildcard node_package.json)","")
-	PREREQ:=node_package-lock.json
-	PREREQ:=local/lib/package-lock.json
-	NODE_LOCK:=node_package-lock.json
-else
-	NODE_LOCK:=
+ifneq ("$(wildcard node_sources/package.json)","")
+	PREREQ+=node_sources/package-lock.json
+	DEPLOY+=local/lib/package-lock.json
 endif
 LAYERS=$(shell cat .layerapi2_dependencies |tr '\n' ',' |sed 's/,$$/\n/')
 
-all: $(PREREQ) custom $(DEPLOY)
+all: .autorestart_includes .autorestart_excludes $(PREREQ) custom $(DEPLOY)
+
+.autorestart_includes:
+	cp -f $(MFCOM_HOME)/share/plugin_autorestart_includes $@
+
+.autorestart_excludes:
+	cp -f $(MFCOM_HOME)/share/plugin_autorestart_excludes $@
 
 clean::
 	rm -Rf local *.plugin *.tar.gz python?_virtualenv_sources/*.tmp python?_virtualenv_sources/src python?_virtualenv_sources/freezed_requirements.* python?_virtualenv_sources/tempolayer* tmp_build
@@ -45,15 +50,19 @@ custom::
 	@echo "override me" >/dev/null
 
 superclean: clean
-	rm -Rf python?_virtualenv_sources/requirements?.txt python?_virtualenv_sources/prerequirements?.txt node_package-lock.json
+	rm -Rf python?_virtualenv_sources/requirements?.txt python?_virtualenv_sources/prerequirements?.txt node_sources/package-lock.json node_sources/node_modules
 
 freeze: superclean $(REQUIREMENTS3) $(REQUIREMENTS2) $(NODE_LOCK)
 
 local/lib/python$(PYTHON3_SHORT_VERSION)/site-packages/requirements3.txt: $(REQUIREMENTS3) python3_virtualenv_sources/src
 	_install_plugin_virtualenv $(NAME) $(VERSION) $(RELEASE)
+	# to force an autorestart
+	touch config.ini
 
 local/lib/python$(PYTHON2_SHORT_VERSION)/site-packages/requirements2.txt: $(REQUIREMENTS2) python2_virtualenv_sources/src
 	_install_plugin_virtualenv $(NAME) $(VERSION) $(RELEASE)
+	# to force an autorestart
+	touch config.ini
 
 python3_virtualenv_sources/requirements3.txt: python3_virtualenv_sources/requirements-to-freeze.txt
 	cd python3_virtualenv_sources && layer_wrapper --empty --layers=$(LAYERS) -- freeze_requirements requirements-to-freeze.txt >requirements3.txt
@@ -89,17 +98,21 @@ release: clean $(PREREQ) custom
 develop: $(PREREQ) custom $(DEPLOY)
 	_plugins.develop $(NAME)
 
-local/lib/package-lock.json: node_package-lock.json node_package.json
-	mkdir -p local/lib/node_modules
-	cp -f node_package.json local/lib/package.json
-	cp -f node_package-lock.json local/lib/package-lock.json
-	cd local/lib && layer_wrapper --empty --layers=$(LAYERS) -- npm ci install
-	mkdir -p local/lib/node_modules
+local/lib/package-lock.json: node_sources/package-lock.json node_sources/package.json
+	mkdir -p local/lib
+	rm -Rf local/lib/node_modules
+	cp -f node_sources/package.json local/lib/package.json
+	cp -f node_sources/package-lock.json local/lib/package-lock.json
+	cp -Rf node_sources/node_modules local/lib/
+	# to force an autorestart
+	touch config.ini
 
-node_package-lock.json: node_package.json
+node_sources/package-lock.json: node_sources/package.json
 	rm -Rf tmp_build
 	mkdir -p tmp_build
 	cp $< tmp_build/package.json
 	cd tmp_build && layer_wrapper --empty --layers=$(LAYERS) -- npm install
 	cp -f tmp_build/package-lock.json $@
+	rm -Rf node_sources/node_modules
+	cp -Rf tmp_build/node_modules node_sources/
 	rm -Rf tmp_build
