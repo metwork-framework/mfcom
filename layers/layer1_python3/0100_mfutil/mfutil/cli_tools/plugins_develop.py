@@ -13,7 +13,7 @@ def main():
     arg_parser = argparse.ArgumentParser(description=DESCRIPTION)
     arg_parser.add_argument("--plugin-path", default=".",
                             help="plugin directory path")
-    arg_parser.add_argument("name", default=".",
+    arg_parser.add_argument("name",
                             help="plugin name")
     args = arg_parser.parse_args()
     echo_running("- Devlinking plugin %s..." % args.name)

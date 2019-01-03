@@ -22,6 +22,9 @@ def main():
     print()
     print(infos['raw_metadata_output'])
     print()
+    if "home" in infos:
+        print("Installation home: %s" % infos['home'])
+        print()
     print("List of files:")
     print()
     print(infos['raw_files_output'])

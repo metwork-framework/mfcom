@@ -14,15 +14,20 @@ TEST_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 class TestCasePlugins(TestCase):
 
     base_path = None
+    original_metwork_layers_path = None
 
     def setUp(self):
         self.base_path = os.path.join(TEST_DIRECTORY,
                                       get_unique_hexa_identifier())
         init_plugins_base(self.base_path)
+        self.original_metwork_layers_path = os.environ["METWORK_LAYERS_PATH"]
+        os.environ["METWORK_LAYERS_PATH"] = \
+            os.environ["METWORK_LAYERS_PATH"] + ":%s" % self.base_path
 
     def tearDown(self):
         shutil.rmtree(self.base_path, True)
         os.system("rm -f *.plugin")
+        os.environ["METWORK_LAYERS_PATH"] = self.original_metwork_layers_path
 
     def test_is_plugins_base_initialized(self):
         self.assertTrue(is_plugins_base_initialized(self.base_path))
