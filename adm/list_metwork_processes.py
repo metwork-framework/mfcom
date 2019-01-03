@@ -40,17 +40,11 @@ def is_same_family(child, proc):
 def get_processes(exclude_same_family=CURRENT_PROCESS, exclude_terminal=True,
                   include_cwd_startswith=MODULE_RUNTIME_HOME_TMP,
                   include_children=True):
-    def add_process_and_children(processes, proc):
-        processes.add(proc)
-        try:
-            children = proc.children(recursive=True)
-        except Exception:
+    def add_process(processes, proc, plugin_name):
+        if proc.pid in [x.pid for x, _ in processes]:
             return
-        for child in children:
-            child.metwork_plugin_name = proc.metwork_plugin_name
-            processes.add(child)
-        return
-    processes = set()
+        processes.append((proc, plugin_name))
+    processes = []
     for proc in psutil.process_iter():
         if proc.username() != USER:
             continue
@@ -67,26 +61,29 @@ def get_processes(exclude_same_family=CURRENT_PROCESS, exclude_terminal=True,
         except psutil.Error:
             continue
         if CURRENT_PLUGIN_ENV_VAR in env:
-            proc.metwork_plugin_name = env[CURRENT_PLUGIN_ENV_VAR]
+            metwork_plugin_name = env[CURRENT_PLUGIN_ENV_VAR]
         else:
-            proc.metwork_plugin_name = ""
-        if env.get('METWORK_LIST_PROCESSES_FORCE', None) == '1':
-            add_process_and_children(processes, proc)
+            metwork_plugin_name = ""
+        if env.get('METWORK_LIST_PROCESSES_FORCE', None) == MODULE:
+            add_process(processes, proc, metwork_plugin_name)
             continue
         if env.get('METWORK_LIST_PROCESSES_FORCE', None) == '0':
             continue
         if exclude_terminal:
-            if proc.terminal() is not None:
+            try:
+                if proc.terminal() is not None:
+                    continue
+            except psutil.Error:
                 continue
         if include_cwd_startswith is not None:
             if cwd.startswith(include_cwd_startswith):
-                add_process_and_children(processes, proc)
+                add_process(processes, proc, metwork_plugin_name)
                 continue
         if 'MODULE' not in env:
             continue
         if env['MODULE'] != MODULE:
             continue
-        add_process_and_children(processes, proc)
+        add_process(processes, proc, metwork_plugin_name)
     return processes
 
 
@@ -109,14 +106,14 @@ else:
 
 if args.pids_only:
     if args.output_format == 'json':
-        print(json.dumps([x.pid for x in processes], indent=4))
+        print(json.dumps([x.pid for x, _ in processes], indent=4))
         sys.exit(0)
     else:
-        for proc in processes:
+        for proc, _ in processes:
             print(proc.pid)
         sys.exit(0)
 
-for proc in processes:
+for proc, metwork_plugin_name in processes:
     try:
         # see https://psutil.readthedocs.io/en/latest/
         # #psutil.Process.cpu_percent
@@ -127,7 +124,7 @@ time.sleep(1)
 
 processes_count = 0
 json_list = []
-for proc in processes:
+for proc, metwork_plugin_name in processes:
     try:
         name = proc.name()
         pid = proc.pid
@@ -136,7 +133,7 @@ for proc in processes:
         num_threads = proc.num_threads()
         cpu_percent = proc.cpu_percent()
         mem_percent = proc.memory_percent(memtype="pss")
-        plugin = proc.metwork_plugin_name
+        plugin = metwork_plugin_name
     except Exception:
         continue
     if args.output_format == 'json':

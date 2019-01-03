@@ -6,6 +6,8 @@
 
 * fix crontab exception in a basic docker container ([ff54e2c](https://github.com/metwork-framework/mfcom/commit/ff54e2c)), closes [#55](https://github.com/metwork-framework/mfcom/issues/55)
 * fix incomplete plugins removal (in some cases) ([cffe11c](https://github.com/metwork-framework/mfcom/commit/cffe11c)), closes [#49](https://github.com/metwork-framework/mfcom/issues/49)
+* fix list metwork processes feature for dev usage (several modules ([9d41327](https://github.com/metwork-framework/mfcom/commit/9d41327))
+* fix metwork processes list ([d7390f4](https://github.com/metwork-framework/mfcom/commit/d7390f4))
 * fix missing postinstall scripts ([b92b2ba](https://github.com/metwork-framework/mfcom/commit/b92b2ba))
 * raise some timeouts for timeout problems on slow machines ([7fd3515](https://github.com/metwork-framework/mfcom/commit/7fd3515)), closes [#46](https://github.com/metwork-framework/mfcom/issues/46)
 * remove a debug message during some plugin operations ([d79ff6e](https://github.com/metwork-framework/mfcom/commit/d79ff6e))
