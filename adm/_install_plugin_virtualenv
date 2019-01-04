@@ -49,11 +49,6 @@ for PYTHON_MAJOR_VERSION in 2 3; do
             cat ${PLUGIN_HOME}/python${PYTHON_MAJOR_VERSION}_virtualenv_sources/*requirements${PYTHON_MAJOR_VERSION}.txt |sort |uniq |sed 's/^-e git.*egg=\(.*\)$/\1/g' >"${PLUGIN_HOME}/local/lib/python${SHORT_VERSION}/site-packages/requirements${PYTHON_MAJOR_VERSION}.txt"
         fi
     fi
-    # FIXME: see metwork-framework/mfserv#41
-    # just an emergency rollback here: we must find something better
-    # if ! test -L "${PLUGIN_HOME}"; then
-    #     rm -Rf "${PLUGIN_HOME}/python${PYTHON_MAJOR_VERSION}_virtualenv_sources"
-    # fi
 done
 if test -f "${PLUGIN_HOME}/node_sources/package-lock.json"; then
     mkdir -p "${PLUGIN_HOME}/local/lib"
