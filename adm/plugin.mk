@@ -2,7 +2,7 @@ NAME:=$(shell config.py config.ini general name)
 VERSION:=$(shell config.py config.ini general version |sed "s/{{MODULE_VERSION}}/$${MODULE_VERSION}/g")
 RELEASE:=1
 
-PREREQ:=
+PREREQ:=.autorestart_includes .autorestart_excludes
 DEPLOY:=
 ifneq ("$(wildcard python3_virtualenv_sources/requirements-to-freeze.txt)","")
 	REQUIREMENTS3:=python3_virtualenv_sources/requirements3.txt
@@ -34,7 +34,7 @@ ifneq ("$(wildcard node_sources/package.json)","")
 endif
 LAYERS=$(shell cat .layerapi2_dependencies |tr '\n' ',' |sed 's/,$$/\n/')
 
-all: .autorestart_includes .autorestart_excludes $(PREREQ) custom $(DEPLOY)
+all: $(PREREQ) custom $(DEPLOY)
 
 .autorestart_includes:
 	cp -f $(MFCOM_HOME)/share/plugin_autorestart_includes $@
@@ -103,7 +103,7 @@ local/lib/package-lock.json: node_sources/package-lock.json node_sources/package
 	rm -Rf local/lib/node_modules
 	cp -f node_sources/package.json local/lib/package.json
 	cp -f node_sources/package-lock.json local/lib/package-lock.json
-	cp -Rf node_sources/node_modules local/lib/
+	if test -d node_sources/node_modules; then cp -Rf node_sources/node_modules local/lib/; fi
 	# to force an autorestart
 	touch config.ini
 
@@ -114,5 +114,5 @@ node_sources/package-lock.json: node_sources/package.json
 	cd tmp_build && layer_wrapper --empty --layers=$(LAYERS) -- npm install
 	cp -f tmp_build/package-lock.json $@
 	rm -Rf node_sources/node_modules
-	cp -Rf tmp_build/node_modules node_sources/
+	if test -d tmp_build/node_modules; then cp -Rf tmp_build/node_modules node_sources/; fi
 	rm -Rf tmp_build
