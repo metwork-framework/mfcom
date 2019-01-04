@@ -2,7 +2,7 @@ NAME:=$(shell config.py config.ini general name)
 VERSION:=$(shell config.py config.ini general version |sed "s/{{MODULE_VERSION}}/$${MODULE_VERSION}/g")
 RELEASE:=1
 
-PREREQ:=
+PREREQ:=.autorestart_includes .autorestart_excludes
 DEPLOY:=
 ifneq ("$(wildcard python3_virtualenv_sources/requirements-to-freeze.txt)","")
 	REQUIREMENTS3:=python3_virtualenv_sources/requirements3.txt
@@ -34,7 +34,7 @@ ifneq ("$(wildcard node_sources/package.json)","")
 endif
 LAYERS=$(shell cat .layerapi2_dependencies |tr '\n' ',' |sed 's/,$$/\n/')
 
-all: .autorestart_includes .autorestart_excludes $(PREREQ) custom $(DEPLOY)
+all: $(PREREQ) custom $(DEPLOY)
 
 .autorestart_includes:
 	cp -f $(MFCOM_HOME)/share/plugin_autorestart_includes $@
