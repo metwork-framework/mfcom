@@ -4,6 +4,7 @@
 
 ### Bug Fixes
 
+* fix building issue with empty node plugins ([2ce7eb1](https://github.com/metwork-framework/mfcom/commit/2ce7eb1))
 * fix crontab exception in a basic docker container ([ff54e2c](https://github.com/metwork-framework/mfcom/commit/ff54e2c)), closes [#55](https://github.com/metwork-framework/mfcom/issues/55)
 * fix incomplete plugins removal (in some cases) ([cffe11c](https://github.com/metwork-framework/mfcom/commit/cffe11c)), closes [#49](https://github.com/metwork-framework/mfcom/issues/49)
 * fix list metwork processes feature for dev usage (several modules ([9d41327](https://github.com/metwork-framework/mfcom/commit/9d41327))
@@ -31,6 +32,7 @@
 * new plugin_wrapper (with options) ([0272488](https://github.com/metwork-framework/mfcom/commit/0272488)), closes [metwork-framework/resources#24](https://github.com/metwork-framework/resources/issues/24)
 * publish conf generation time as an env var ([ca04ab2](https://github.com/metwork-framework/mfcom/commit/ca04ab2)), closes [metwork-framework/resources#10](https://github.com/metwork-framework/resources/issues/10)
 * refactor node plugins build ([3782494](https://github.com/metwork-framework/mfcom/commit/3782494)), closes [#69](https://github.com/metwork-framework/mfcom/issues/69)
+* remove virtualenv sources after .plugin install ([08e6203](https://github.com/metwork-framework/mfcom/commit/08e6203))
 
 
 ### BREAKING CHANGES
