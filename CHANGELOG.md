@@ -11,6 +11,9 @@
 - fix building issue with empty node plugins
 - fix list metwork processes feature for dev usage (several modules as the same user)
 
+<a name="v0.4.1"></a>
+## [v0.4.1] - 2019-01-09
+
 <a name="v0.4.0"></a>
 ## [v0.4.0] - 2019-01-08
 ### Feat
