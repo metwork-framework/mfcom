@@ -2,12 +2,15 @@
 ## [Unreleased]
 
 ### Feat
+- add _nginx.reload utility
 - add home to plugins.list --json output
 - introduce new autorestart plugin
 - refactor node plugins build
 - remove virtualenv sources after .plugin install
+- run post_installation plugins tasks
 
 ### Fix
+- avoid shellcheck warnings
 - fix building issue with empty node plugins
 - fix list metwork processes feature for dev usage (several modules as the same user)
 
