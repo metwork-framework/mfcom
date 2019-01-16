@@ -2,6 +2,7 @@
 ## [Unreleased]
 
 ### Feat
+- add _nginx.reload utility
 - add home to plugins.list --json output
 - introduce new autorestart plugin
 - refactor node plugins build
