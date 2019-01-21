@@ -11,13 +11,41 @@ You must:
 
 ## Install mfcom metwork package
 
+## Full installation
+
 You just have to execute the following command (as `root` user):
 
 ```
 yum install metwork-mfcom
 ```
 
-Of course, you can install several metwork packages on the same linux box.
+## Minimal installation
+
+If you prefer to start with a minimal installation, you have to execute the following command
+(as `root` user):
+
+```
+yum install metwork-mfcom-minimal
+```
+
+## Addons
+
+### Dependencies addons
+
+```
+# To install some devtools
+yum install metwork-mfext-devtools
+
+# To install some scientific libraries
+yum install metwork-mfext-scientific
+
+# To install python2 support
+# (including corresponding scientific and devtools addons)
+yum install metwork-mfext-python2
+```
+
+
+
 
 
 
@@ -32,6 +60,19 @@ To uninstall mfcom metwork package, use the following command (still as `root` u
 ```
 yum remove "metwork-mfcom*"
 ```
+
+## Upgrade mfcom metwork package
+
+To upgrade mfcom metwork package, use the following commands (still as `root` user):
+
+
+
+```
+# We upgrade mfcom metwork package
+yum upgrade "metwork-mfcom*"
+```
+
+
 
 ## Uninstall all metwork packages
 
