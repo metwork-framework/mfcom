@@ -11,7 +11,7 @@ You must:
 
 ## Install mfcom metwork package
 
-## Full installation
+## Full installation
 
 You just have to execute the following command (as `root` user):
 
