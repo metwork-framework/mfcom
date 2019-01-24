@@ -3,7 +3,7 @@
 import argparse
 import sys
 from mfutil.plugins import develop_plugin, \
-    MFUtilPluginAlreadyInstalled
+    MFUtilPluginAlreadyInstalled, is_dangerous_plugin
 from mfutil.cli import echo_ok, echo_running, echo_nok
 
 DESCRIPTION = "develop a plugin from a directory"
@@ -23,6 +23,7 @@ def main():
         echo_nok("already installed")
         sys.exit(1)
     echo_ok()
+    is_dangerous_plugin(args.name)
 
 
 if __name__ == '__main__':

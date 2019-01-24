@@ -273,6 +273,15 @@ def _postinstall_plugin(name, version, release, quiet=False):
     return True
 
 
+def is_dangerous_plugin(name):
+    res = BashWrapper("_plugins.is_dangerous %s" % (name,))
+    if not res:
+        __get_logger().warning("error during %s", res)
+        return
+    if res.stdout and len(res.stdout) > 0:
+        print(res.stdout)
+
+
 def _preuninstall_plugin(name, version, release, quiet=False):
     res = BashWrapper("_plugins.preuninstall %s %s %s" %
                       (name, version, release))
