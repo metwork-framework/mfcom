@@ -4,6 +4,7 @@
 ### Feat
 - Add python and default layers
 - add _nginx.reload utility
+- add a way to display some warnings during plugin installation
 - add home to plugins.list --json output
 - introduce new autorestart plugin
 - refactor node plugins build
@@ -14,6 +15,7 @@
 - avoid shellcheck warnings
 - fix building issue with empty node plugins
 - fix list metwork processes feature for dev usage (several modules as the same user)
+- warning if plugin is already installed in dev
 
 <a name="v0.4.1"></a>
 ## [v0.4.1] - 2019-01-09
