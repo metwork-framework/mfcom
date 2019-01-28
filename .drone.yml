@@ -47,6 +47,8 @@ publish_ci_common: &publish_ci_common
     - /pub:/pub
     - /buildcache:/buildcache
 
+
+
 pipeline:
   bootstrap_integration_push:
     image: metwork/mfcom-${OS_VERSION}-buildimage:integration
@@ -92,6 +94,7 @@ pipeline:
     when:
       event: tag
       branch: [ release_* ]
+
   build_integration:
     <<: *build_common
     image: metwork/mfcom-${OS_VERSION}-buildimage:integration
@@ -118,6 +121,9 @@ pipeline:
     when:
       event: tag
       branch: [ release_* ]
+
+
+    
   publish_ci_integration:
     <<: *publish_ci_common
     image: metwork/mfcom-${OS_VERSION}-buildimage:integration
@@ -154,7 +160,6 @@ pipeline:
       status: success
       event: push
       branch: [ master, integration, experimental*, release_* ]
-
 
 
 
