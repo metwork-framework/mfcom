@@ -21,8 +21,6 @@ clean::
 test::
 	cd layers/layer1_python3/0100_mfutil && make test
 	cd layers/layer1_python2/0100_mfutil && make test
-	cd layers/layer1_python3/0200_mflog && make test
-	cd layers/layer1_python2/0200_mflog && make test
 	cd layers/layer1_python3/0300_conf_monitor && make test
 
 directories:

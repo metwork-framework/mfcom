@@ -1,4 +1,4 @@
-CONFIGS=python_default_logging.json
+CONFIGS=
 
 include ../adm/root.mk
 include $(MFEXT_HOME)/share/subdir_root.mk

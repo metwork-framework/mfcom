@@ -12,7 +12,6 @@ $(MFCOM_HOME)/share/mfext_home:
 
 utilities_doc:
 	cat ../mfutil_python/setup.py |grep ' = mfutil.cli_tools' |awk -F '=' '{print $$1;}' |awk -F '"' '{print $$2;}' >utils.list.tmp
-	cat ../mflog_python/setup.py |grep ' = .*:.*' |awk -F '=' '{print $$1;}' |awk -F '"' '{print $$2;}' >>utils.list.tmp
 	echo "echo_ok" >>utils.list.tmp
 	echo "echo_bold" >>utils.list.tmp
 	echo "echo_warning" >>utils.list.tmp
