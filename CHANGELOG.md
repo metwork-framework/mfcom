@@ -1,6 +1,14 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+<a name="v0.5.2"></a>
+## [v0.5.2] - 2019-01-31
+
+<a name="v0.5.1"></a>
+## [v0.5.1] - 2019-01-28
+
+<a name="v0.5.0"></a>
+## [v0.5.0] - 2019-01-28
 ### Feat
 - Add python and default layers
 - add _nginx.reload utility
@@ -16,6 +24,12 @@
 - fix building issue with empty node plugins
 - fix list metwork processes feature for dev usage (several modules as the same user)
 - warning if plugin is already installed in dev
+
+### BREAKING CHANGE
+
+node_package.json must be renamed in
+node_sources/package.json and node_package-lock.json must be renamed in
+node_sources/node_package-lock.json
 
 <a name="v0.4.1"></a>
 ## [v0.4.1] - 2019-01-09
