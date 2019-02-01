@@ -350,9 +350,7 @@ def develop_plugin(plugin_path, name, plugins_base_dir=None,
     try:
         os.symlink(plugin_path, os.path.join(plugins_base_dir, name))
     except OSError:
-        if not quiet:
-            __get_logger().warning(
-                "plugin '%s' already installed as a symlink", name)
+        pass
     postinstall_status = _postinstall_plugin(name, "dev_link", "dev_link",
                                              quiet=quiet)
     if not postinstall_status and not ignore_errors:
