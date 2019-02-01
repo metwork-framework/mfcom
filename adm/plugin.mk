@@ -133,5 +133,5 @@ freeze:
 	if test -d local/lib/node_modules; then rm -Rf node_sources/node_modules; cp -Rf local/lib/node_modules node_sources/; fi
 	if test local/lib/package-lock.json; then cp -f local/lib/package-lock.json node_sources/package-lock.json; fi
 	if test local/lib/package.json; then cp -f local/lib/package.json node_sources/package.json; fi
-	if local/lib/python$(PYTHON3_SHORT_VERSION)/site-packages/requirements3.txt; then echo "ERROR: freeze command is not implemented for python plugins"; fi
-	if local/lib/python$(PYTHON2_SHORT_VERSION)/site-packages/requirements2.txt; then echo "ERROR: freeze command is not implemented for python plugins"; fi
+	@if test -f local/lib/python$(PYTHON3_SHORT_VERSION)/site-packages/requirements3.txt; then echo "ERROR: freeze command is not implemented for python plugins"; fi
+	@if test -f local/lib/python$(PYTHON2_SHORT_VERSION)/site-packages/requirements2.txt; then echo "ERROR: freeze command is not implemented for python plugins"; fi
