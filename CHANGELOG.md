@@ -1,6 +1,13 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Feat
+- remove old mflog library
+
+### Fix
+- remove a warning during make develop
+- remove a warning during make freeze with nodejs template
+
 <a name="v0.5.2"></a>
 ## [v0.5.2] - 2019-01-31
 
