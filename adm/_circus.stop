@@ -39,6 +39,17 @@ def get_circus_master_pids(verbose=True):
     return pids
 
 
+def send_sigterm(pids):
+    for pid in pids:
+        try:
+            if args.verbose:
+                LOG.info("Sending SIGTERM to process #%i" % pid)
+            p = psutil.Process(pid)
+            p.send_signal(signal.SIGTERM)
+        except Exception:
+            pass
+
+
 argparser = argparse.ArgumentParser(description="stop circus for the "
                                     "current user/module")
 argparser.add_argument("--dont-wait", action="store_true", help="don't wait "
@@ -60,19 +71,13 @@ if len(pids) == 0:
         echo_warning("(already stopped)")
     sys.exit(1)
 
-for pid in pids:
-    try:
-        if args.verbose:
-            LOG.info("Sending SIGTERM to process #%i" % pid)
-        p = psutil.Process(pid)
-        p.send_signal(signal.SIGTERM)
-    except Exception:
-        pass
+send_sigterm(pids)
 
 if args.dont_wait:
     sys.exit(0)
 
 before = datetime.now()
+i = 0
 while (datetime.now() - before).total_seconds() < args.maxwait:
     if args.verbose:
         LOG.info("sleeping 0.2s...")
@@ -80,6 +85,14 @@ while (datetime.now() - before).total_seconds() < args.maxwait:
     pids = get_circus_master_pids(args.verbose)
     if len(pids) == 0:
         break
+    i = i + 1
+    if i >= 5:
+        # every second we send another SIGTERM
+        # (in some corner cases, the initial SIGTERM can be lost, for example
+        #  if send during a circus restart)
+        send_sigterm(pids)
+        i = 0
+
 
 if len(pids) == 0:
     if args.verbose:
