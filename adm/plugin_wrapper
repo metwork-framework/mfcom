@@ -15,9 +15,6 @@ parser = argparse.ArgumentParser(description=DESCRIPTION)
 parser.add_argument("--do-not-add-plugin-dir-to-python-path",
                     action="store_true",
                     help="do not add plugin directory to PYTHONPATH")
-parser.add_argument("--do-not-add-plugin-dir-to-node-path",
-                    action="store_true",
-                    help="do not add plugin directory to NODE_PATH")
 parser.add_argument("--do-not-add-lib-subdir-to-python-path",
                     action='store_true',
                     help="do not add lib subdir to PYTHONPATH")
@@ -46,8 +43,6 @@ lw_args = ["--empty",
            "--layers=%s" % layer_name]
 if args.do_not_add_plugin_dir_to_python_path is not True:
     lw_args.append("--prepend-env=PYTHONPATH,%s" % layer_dir)
-if args.do_not_add_plugin_dir_to_node_path is not True:
-    lw_args.append("--prepend-env=NODE_PATH,%s" % layer_dir)
 if args.add_extra_dir_to_python_path is not None:
     lw_args.append("--prepend-env=PYTHONPATH,%s" %
                    args.add_extra_dir_to_python_path)
