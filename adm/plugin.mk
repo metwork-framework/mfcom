@@ -96,4 +96,4 @@ release: clean $(PREREQ) custom
 
 develop: $(PREREQ) custom $(DEPLOY)
 	_plugins.develop $(NAME)
-	plugin_wrapper $(NAME) -- npm install
+	@if test -f package.json; then plugin_wrapper $(NAME) -- npm install; fi
