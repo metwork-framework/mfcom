@@ -17,9 +17,12 @@ LOGGER = getLogger("telegraf_collector_metwork_module")
 MODULE = os.environ['MODULE']
 CMD = "list_metwork_processes.py --output-format=json --include-current-family"
 MONITORING_CMDLINE_PATTERNS = ['*telegraf*', '*list_metwork_processes*']
+IS_MONITORING_MODULE = (MODULE in ['MFSYSMON', 'MFADMIN'])
 
 
 def is_cmdline_monitoring(cmdline):
+    if IS_MONITORING_MODULE:
+        return True
     for pattern in MONITORING_CMDLINE_PATTERNS:
         if fnmatch.fnmatch(cmdline, pattern):
             return True
@@ -39,7 +42,8 @@ def get_stats():
         return None
     plugins = set([x['plugin'] for x in processes if x['plugin'] != ''])
     plugins.add('#monitoring#')
-    plugins.add('#core#')
+    if not IS_MONITORING_MODULE:
+        plugins.add('#core#')
     for plugin in plugins:
         if plugin not in stats:
             stats[plugin] = {}
