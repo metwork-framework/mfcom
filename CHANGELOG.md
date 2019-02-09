@@ -1,6 +1,8 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+<a name="v0.5.4"></a>
+## [v0.5.4] - 2019-02-06
 ### Fix
 - circus stop was too long in some corner cases
 
