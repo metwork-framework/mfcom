@@ -9,6 +9,11 @@
 - remove a warning during make develop
 - remove a warning during make freeze with nodejs template
 
+<a name="v0.5.4"></a>
+## [v0.5.4] - 2019-02-06
+### Fix
+- circus stop was too long in some corner cases
+
 <a name="v0.5.3"></a>
 ## [v0.5.3] - 2019-01-31
 
