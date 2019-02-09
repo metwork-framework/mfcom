@@ -4,6 +4,11 @@
 ### Fix
 - fix list metwork processes feature for dev usage (several modules as the same user)
 
+<a name="v0.5.4"></a>
+## [v0.5.4] - 2019-02-06
+### Fix
+- circus stop was too long in some corner cases
+
 <a name="v0.5.3"></a>
 ## [v0.5.3] - 2019-01-31
 
