@@ -3,9 +3,12 @@
 
 ### Feat
 - remove old mflog library
+- split #core# and #monitoring# in cpu/mem usage
+- we count the memory usage with rss and not with pss
 
 ### Fix
 - circus stop was too long in some corner cases
+- fix exception in list_metwork_processes.py in some corner cases
 - remove a warning during make develop
 - remove a warning during make freeze with nodejs template
 
