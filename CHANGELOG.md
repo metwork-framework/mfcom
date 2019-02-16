@@ -12,6 +12,9 @@
 - remove a warning during make develop
 - remove a warning during make freeze with nodejs template
 
+<a name="v0.5.5"></a>
+## [v0.5.5] - 2019-02-09
+
 <a name="v0.5.4"></a>
 ## [v0.5.4] - 2019-02-06
 ### Fix
