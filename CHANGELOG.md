@@ -4,6 +4,9 @@
 ### Fix
 - fix list metwork processes feature for dev usage (several modules as the same user)
 
+<a name="v0.5.5"></a>
+## [v0.5.5] - 2019-02-09
+
 <a name="v0.5.4"></a>
 ## [v0.5.4] - 2019-02-06
 ### Fix
