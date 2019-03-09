@@ -1,6 +1,12 @@
 # automatically generated from https://github.com/metwork-framework/resources/blob/master/cookiecutter/_%7B%7Bcookiecutter.repo%7D%7D/mfxxx_drone.yml template
 
 
+
+    
+    
+
+
+
     
     
 
@@ -26,9 +32,11 @@ build_common: &build_common
 
     - mkdir -p /opt/metwork-mfcom-$${TARGET_DIR}
     - make
+
     - make doc
     - rm -Rf html_doc
     - cp -Rf /opt/metwork-mfcom-$${TARGET_DIR}/html_doc .
+
     - make test
     - make RELEASE_BUILD=${DRONE_BUILD_NUMBER} rpm
     - mv /opt/metwork-mfcom-$${TARGET_DIR}/*.rpm .
@@ -41,10 +49,13 @@ publish_ci_common: &publish_ci_common
     - mkdir -p /pub/metwork/continuous_integration/rpms/${DRONE_BRANCH}/${OS_VERSION}/
     - cp *.rpm /pub/metwork/continuous_integration/rpms/${DRONE_BRANCH}/${OS_VERSION}/
     - createrepo --update /pub/metwork/continuous_integration/rpms/${DRONE_BRANCH}/${OS_VERSION}
+
     - if test "${OS_VERSION}" = "centos6"; then rm -Rf /pub/metwork/continuous_integration/docs/${DRONE_BRANCH}/mfcom; mkdir -p /pub/metwork/continuous_integration/docs/${DRONE_BRANCH}/mfcom ; cp -Rf html_doc/* /pub/metwork/continuous_integration/docs/${DRONE_BRANCH}/mfcom/ ; fi
+
     - touch /buildcache/build_mfcom_${DRONE_BRANCH}_`cat .drone_cache`
   volumes:
     - /pub:/pub
+    - /private:/private
     - /buildcache:/buildcache
 
 
@@ -123,7 +134,7 @@ pipeline:
       ref: refs/tags/v*
 
 
-    
+
   publish_ci_integration:
     <<: *publish_ci_common
     image: metwork/mfcom-${OS_VERSION}-buildimage:integration
@@ -140,6 +151,7 @@ pipeline:
     image: metwork/mfxxx-${OS_VERSION}-buildimage:${DRONE_BRANCH}
     volumes:
       - /pub:/pub
+      - /private:/private
     commands:
       - if test "$${FORCED_OS_VERSION}" != ""; then if test "$${FORCED_OS_VERSION}" != "${OS_VERSION}"; then echo "step bypass"; exit 0; fi; fi
       - mkdir -p /pub/metwork/releases/rpms/${DRONE_BRANCH}/${OS_VERSION}/
