@@ -273,6 +273,15 @@ def _postinstall_plugin(name, version, release, quiet=False):
     return True
 
 
+def is_dangerous_plugin(name):
+    res = BashWrapper("_plugins.is_dangerous %s" % (name,))
+    if not res:
+        __get_logger().warning("error during %s", res)
+        return
+    if res.stdout and len(res.stdout) > 0:
+        print(res.stdout)
+
+
 def _preuninstall_plugin(name, version, release, quiet=False):
     res = BashWrapper("_plugins.preuninstall %s %s %s" %
                       (name, version, release))
@@ -337,13 +346,11 @@ def develop_plugin(plugin_path, name, plugins_base_dir=None,
                    ignore_errors=False, quiet=False):
     plugin_path = os.path.abspath(plugin_path)
     plugins_base_dir = _get_plugins_base_dir(plugins_base_dir)
-    installed_infos = get_plugin_info(name, mode="name",
-                                      plugins_base_dir=plugins_base_dir)
-    if installed_infos is not None:
-        raise MFUtilPluginAlreadyInstalled("plugin %s already installed" %
-                                           name)
     shutil.rmtree(os.path.join(plugins_base_dir, name), True)
-    os.symlink(plugin_path, os.path.join(plugins_base_dir, name))
+    try:
+        os.symlink(plugin_path, os.path.join(plugins_base_dir, name))
+    except OSError:
+        pass
     postinstall_status = _postinstall_plugin(name, "dev_link", "dev_link",
                                              quiet=quiet)
     if not postinstall_status and not ignore_errors:

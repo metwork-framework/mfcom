@@ -28,13 +28,15 @@ def main():
         name = plugin['name']
         release = plugin['release']
         version = plugin['version']
+        home = plugin['home']
         if args.raw:
             print("%s~~~%s~~~%s" % (name, version, release))
         elif args.json:
             json_output.append({
                 "name": name,
                 "release": release,
-                "version": version
+                "version": version,
+                "home": home
             })
         else:
             print("| %-25s | %-25s | %.25s" % (name, version, release))

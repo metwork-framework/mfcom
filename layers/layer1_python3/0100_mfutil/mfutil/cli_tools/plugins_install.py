@@ -3,7 +3,8 @@
 import argparse
 import sys
 from mfutil.plugins import install_plugin, get_plugin_info, \
-    MFUtilPluginAlreadyInstalled, MFUtilPluginCantInstall
+    MFUtilPluginAlreadyInstalled, MFUtilPluginCantInstall, \
+    is_dangerous_plugin
 from mfutil.cli import echo_running, echo_nok, echo_ok
 
 DESCRIPTION = "install a plugin file"
@@ -34,6 +35,7 @@ def main():
         print(e)
         sys.exit(2)
     echo_ok()
+    is_dangerous_plugin(name)
 
 
 if __name__ == '__main__':

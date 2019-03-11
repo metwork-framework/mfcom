@@ -46,7 +46,10 @@ def get_processes(exclude_same_family=CURRENT_PROCESS, exclude_terminal=True,
         processes.append((proc, plugin_name))
     processes = []
     for proc in psutil.process_iter():
-        if proc.username() != USER:
+        try:
+            if proc.username() != USER:
+                continue
+        except psutil.Error:
             continue
         if exclude_same_family is not None:
             if is_same_family(exclude_same_family, proc):
@@ -132,7 +135,7 @@ for proc, metwork_plugin_name in processes:
         num_fds = proc.num_fds()
         num_threads = proc.num_threads()
         cpu_percent = proc.cpu_percent()
-        mem_percent = proc.memory_percent(memtype="pss")
+        mem_percent = proc.memory_percent(memtype="rss")
         plugin = metwork_plugin_name
     except Exception:
         continue

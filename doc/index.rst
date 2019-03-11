@@ -9,7 +9,6 @@ MFDOC documentation
 .. toctree::
 
    mfutil
-   mflog
    layer_root
    layer_python2
    layer_python3
