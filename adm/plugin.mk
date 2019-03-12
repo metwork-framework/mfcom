@@ -1,6 +1,6 @@
 .PHONY: freeze
 
-NAME:=$(shell config.py config.ini general name)
+NAME:=$(shell cat .layerapi2_label |sed 's/^plugin_//g' |awk -F '@' '{print $$1;}')
 VERSION:=$(shell config.py config.ini general version |sed "s/{{MODULE_VERSION}}/$${MODULE_VERSION}/g")
 RELEASE:=1
 
