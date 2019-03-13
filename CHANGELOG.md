@@ -2,6 +2,7 @@
 ## [Unreleased]
 
 ### Feat
+- don't use plugin name in [general] section
 - remove old mflog library
 - split #core# and #monitoring# in cpu/mem usage
 - we count the memory usage with rss and not with pss
