@@ -30,9 +30,6 @@ ifneq ("$(REQUIREMENTS2)","")
 	PREREQ+=$(REQUIREMENTS2) python2_virtualenv_sources/src
 	DEPLOY+=local/lib/python$(PYTHON2_SHORT_VERSION)/site-packages/requirements2.txt
 endif
-#ifneq ("$(wildcard package.json)","")
-#	PREREQ+=node_modules
-#endif
 LAYERS=$(shell cat .layerapi2_dependencies |tr '\n' ',' |sed 's/,$$/\n/')
 
 all: $(PREREQ) custom $(DEPLOY)
