@@ -2,6 +2,8 @@
 ## [Unreleased]
 
 ### Feat
+- add an addon to jsonlog2elasticsearch
+- corresponding changes for nodejs plugin refactor
 - don't use plugin name in [general] section
 - remove old mflog library
 - split #core# and #monitoring# in cpu/mem usage
