@@ -4,6 +4,9 @@
 ### Fix
 - fix list metwork processes feature for dev usage (several modules as the same user)
 
+<a name="v0.5.7"></a>
+## [v0.5.7] - 2019-03-16
+
 <a name="v0.5.6"></a>
 ## [v0.5.6] - 2019-02-16
 
@@ -21,11 +24,11 @@
 <a name="v0.5.2"></a>
 ## [v0.5.2] - 2019-01-31
 
-<a name="v0.5.0"></a>
-## [v0.5.0] - 2019-01-28
-
 <a name="v0.5.1"></a>
 ## [v0.5.1] - 2019-01-28
+
+<a name="v0.5.0"></a>
+## [v0.5.0] - 2019-01-28
 ### Feat
 - Add python and default layers
 - add _nginx.reload utility
