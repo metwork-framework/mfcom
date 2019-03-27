@@ -15,7 +15,7 @@ You must:
 
 You just have to execute the following command (as `root` user):
 
-```
+```bash
 yum install metwork-mfcom
 ```
 
@@ -24,7 +24,7 @@ yum install metwork-mfcom
 If you prefer to start with a minimal installation, you have to execute the following command
 (as `root` user):
 
-```
+```bash
 yum install metwork-mfcom-minimal
 ```
 
@@ -32,7 +32,7 @@ yum install metwork-mfcom-minimal
 
 ### Optional dependencies addons
 
-```
+```bash
 # To install some devtools
 yum install metwork-mfext-devtools
 
@@ -57,7 +57,7 @@ To uninstall mfcom metwork module, use the following command (still as `root` us
 
 
 
-```
+```bash
 yum remove "metwork-mfcom*"
 ```
 
@@ -67,7 +67,7 @@ To upgrade mfcom metwork module, use the following commands (still as `root` use
 
 
 
-```
+```bash
 # We upgrade mfcom metwork module
 yum upgrade "metwork-mfcom*"
 ```
@@ -78,7 +78,7 @@ yum upgrade "metwork-mfcom*"
 
 To uninstall all metwork modules, use following root commands:
 
-```
+```bash
 # We stop metwork services
 service metwork stop
 
@@ -92,7 +92,7 @@ The same idea applies to upgrade.
 
 For example, to upgrade all metwork modules on a computer, use following root commands:
 
-```
+```bash
 # We stop metwork services
 service metwork stop
 
