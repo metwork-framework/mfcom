@@ -1,4 +1,15 @@
 #!/bin/bash
 
-_circus.stop
-_circus.start
+ENDPOINT=$(env |grep "^${MODULE}_CIRCUS_ENDPOINT" |awk -F '=' '{print $2;}')
+
+_circus.status
+if test $? -ne 0; then
+    _circus.stop
+    _circus.start
+fi
+
+timeout 10s _circusctl --endpoint "${ENDPOINT}" reloadconfig
+if test $? -ne 0; then
+    _circus.stop
+    _circus.start
+fi
