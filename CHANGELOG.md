@@ -1,6 +1,8 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+<a name="v0.6.0"></a>
+## [v0.6.0] - 2019-03-31
 ### Feat
 - add an addon to jsonlog2elasticsearch
 - corresponding changes for nodejs plugin refactor
