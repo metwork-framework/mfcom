@@ -1,6 +1,9 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Feat
+- better circus reload (reload only what it is necessary)
+
 <a name="v0.6.0"></a>
 ## [v0.6.0] - 2019-03-31
 ### Feat
