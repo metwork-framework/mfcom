@@ -2,6 +2,8 @@
 ## [Unreleased]
 
 ### Feat
+- add plugin name in mfadmin logs
+- add private util for circus management
 - better circus reload (reload only what it is necessary)
 
 <a name="v0.6.0"></a>
