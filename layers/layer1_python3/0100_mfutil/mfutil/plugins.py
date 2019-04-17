@@ -7,6 +7,7 @@ import os
 import shutil
 import hashlib
 import envtpl
+import re
 from mfutil import BashWrapperException, BashWrapperOrRaise, BashWrapper
 from mfutil import mkdir_p_or_die, get_unique_hexa_identifier
 from mfutil.layerapi2 import LayerApi2Wrapper
@@ -16,8 +17,27 @@ RUNTIME_HOME = os.environ.get('MODULE_RUNTIME_HOME', '/tmp')
 MFEXT_HOME = os.environ['MFEXT_HOME']
 MODULE_LOWERCASE = os.environ['MODULE_LOWERCASE']
 SPEC_TEMPLATE = os.path.join(MFEXT_HOME, "share", "templates", "plugin.spec")
+PLUGIN_NAME_REGEXP = "^[A-Za-z0-9_-]+$"
 
 # FIXME: doc
+
+
+def validate_plugin_name(plugin_name):
+    """Validate a plugin name.
+
+    Args:
+        plugin_name (string): the plugin name to validate.
+
+    Returns:
+        (boolean, message): (True, None) if the plugin name is ok,
+            (False, "error message") if the plugin name is not ok.
+
+    """
+    if plugin_name.startswith("plugin_"):
+        return (False, "A plugin name can't start with 'plugin_'")
+    if not re.match(PLUGIN_NAME_REGEXP, plugin_name):
+        return (False, "A plugin name must follow %s" % PLUGIN_NAME_REGEXP)
+    return (True, None)
 
 
 def plugin_name_to_layerapi2_label(plugin_name):
