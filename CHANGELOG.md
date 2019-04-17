@@ -2,10 +2,32 @@
 ## [Unreleased]
 
 ### Feat
+- add an addon to jsonlog2elasticsearch
 - add plugin name in mfadmin logs
 - add private util for circus management
 - better circus reload (reload only what it is necessary)
+- corresponding changes for nodejs plugin refactor
+- don't use plugin name in [general] section
 - introduce mflog_addon
+- remove old mflog library
+- split #core# and #monitoring# in cpu/mem usage
+- we count the memory usage with rss and not with pss
+
+### Fix
+- circus stop was too long in some corner cases
+- fix exception in list_metwork_processes.py in some corner cases
+- remove a warning during make develop
+- remove a warning during make freeze with nodejs template
+
+<a name="v0.5.8"></a>
+## [v0.5.8] - 2019-03-31
+### Feat
+- split #core# and #monitoring# in cpu/mem usage
+- we count the memory usage with rss and not with pss
+
+### Fix
+- circus stop was too long in some corner cases
+- fix exception in list_metwork_processes.py in some corner cases
 
 <a name="v0.6.0"></a>
 ## [v0.6.0] - 2019-03-31
@@ -43,11 +65,11 @@
 <a name="v0.5.2"></a>
 ## [v0.5.2] - 2019-01-31
 
-<a name="v0.5.1"></a>
-## [v0.5.1] - 2019-01-28
-
 <a name="v0.5.0"></a>
 ## [v0.5.0] - 2019-01-28
+
+<a name="v0.5.1"></a>
+## [v0.5.1] - 2019-01-28
 ### Feat
 - Add python and default layers
 - add _nginx.reload utility
