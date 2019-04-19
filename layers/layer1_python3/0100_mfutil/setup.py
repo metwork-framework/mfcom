@@ -13,6 +13,8 @@ setup(
             "get_domainname = mfutil.cli_tools.get_domainname:main",
             "get_real_ip = mfutil.cli_tools.get_real_ip:main",
             "plugins.list = mfutil.cli_tools.plugins_list:main",
+            "plugins.validate_name = "
+            "mfutil.cli_tools.plugins_validate_name:main",
             "plugins.info = mfutil.cli_tools.plugins_info:main",
             "plugins.hash = mfutil.cli_tools.plugins_hash:main",
             "_plugins.init = mfutil.cli_tools.plugins_init:main",

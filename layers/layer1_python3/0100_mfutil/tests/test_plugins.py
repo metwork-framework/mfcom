@@ -5,7 +5,7 @@ from unittest import TestCase
 from mfutil.plugins import init_plugins_base, is_plugins_base_initialized, \
     get_installed_plugins, get_plugins_base_dir, get_plugin_info, \
     build_plugin, install_plugin, uninstall_plugin, MFUtilPluginNotInstalled, \
-    MFUtilPluginAlreadyInstalled, develop_plugin
+    MFUtilPluginAlreadyInstalled, develop_plugin, validate_plugin_name
 from mfutil import get_unique_hexa_identifier
 
 TEST_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
@@ -28,6 +28,20 @@ class TestCasePlugins(TestCase):
         shutil.rmtree(self.base_path, True)
         os.system("rm -f *.plugin")
         os.environ["METWORK_LAYERS_PATH"] = self.original_metwork_layers_path
+
+    def test_validate_plugin_name(self):
+        (b, msg) = validate_plugin_name("foo-bar_foo-1_2FOO")
+        self.assertTrue(b)
+        self.assertTrue(msg is None)
+        (b, msg) = validate_plugin_name("plugin_foo-bar_foo-1_2FOO")
+        self.assertFalse(b)
+        self.assertTrue(len(msg) > 0)
+        (b, msg) = validate_plugin_name("foo-bar_foo-1.2FOO")
+        self.assertFalse(b)
+        self.assertTrue(len(msg) > 0)
+        (b, msg) = validate_plugin_name("")
+        self.assertFalse(b)
+        self.assertTrue(len(msg) > 0)
 
     def test_is_plugins_base_initialized(self):
         self.assertTrue(is_plugins_base_initialized(self.base_path))
