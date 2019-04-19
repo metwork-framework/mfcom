@@ -5,6 +5,7 @@ import argparse
 import os
 from cookiecutter.main import cookiecutter
 from mfutil import get_bash_output_or_die
+from mfutil.plugins import validate_plugin_name
 import shutil
 import glob
 import sys
@@ -63,6 +64,12 @@ if not os.path.isdir(template_path):
 if os.path.isdir(args.plugin):
     print("ERROR : the subdirectory %s already exists in %s" %
           (args.plugin, os.getcwd()))
+    parser.exit(1)
+
+(b, msg) = validate_plugin_name(args.plugin)
+if b is False:
+    print("ERROR: the plugin name: %s is not valid" % args.plugin)
+    print("Validation error: %s" % msg)
     parser.exit(1)
 
 extra_context = {"name": args.plugin}
