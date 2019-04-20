@@ -8,6 +8,8 @@
 - add private util for circus management
 - add plugin name in mfadmin logs
 - introduce mflog_addon
+- add a plugin name validation in bootstrap
+- add a validate_plugin_name feature in mfutil
 
 
 
