@@ -30,15 +30,18 @@ ifneq ("$(REQUIREMENTS2)","")
 	PREREQ+=$(REQUIREMENTS2) python2_virtualenv_sources/src
 	DEPLOY+=local/lib/python$(PYTHON2_SHORT_VERSION)/site-packages/requirements2.txt
 endif
+ifneq ("$(wildcard package.json)","")
+	PREREQ+=package-lock.json
+endif
 LAYERS=$(shell cat .layerapi2_dependencies |tr '\n' ',' |sed 's/,$$/\n/')
 
 all: $(PREREQ) custom $(DEPLOY)
 
-.autorestart_includes:
-	cp -f $(MFCOM_HOME)/share/plugin_autorestart_includes $@
+.autorestart_includes: $(MFCOM_HOME)/share/plugin_autorestart_includes
+	@cp -f $< $@
 
-.autorestart_excludes:
-	cp -f $(MFCOM_HOME)/share/plugin_autorestart_excludes $@
+.autorestart_excludes: $(MFCOM_HOME)/share/plugin_autorestart_excludes
+	@cp -f $< $@
 
 clean::
 	rm -Rf local *.plugin *.tar.gz python?_virtualenv_sources/*.tmp python?_virtualenv_sources/src python?_virtualenv_sources/freezed_requirements.* python?_virtualenv_sources/tempolayer* tmp_build node_modules
@@ -88,9 +91,12 @@ python2_virtualenv_sources/src: $(REQUIREMENTS2)
 	    cd python2_virtualenv_sources && layer_wrapper --empty --layers=$(LAYERS) -- download_compile_requirements requirements2.txt; \
 	fi
 
+package-lock.json: package.json
+	rm -f $@
+	export METWORK_LAYERS_PATH=`pwd`:$(METWORK_LAYERS_PATH) ; plugin_wrapper $(NAME) -- npm install
+
 release: clean $(PREREQ) custom
 	layer_wrapper --empty --layers=$(LAYERS),python3@mfcom -- _plugins.make --show-plugin-path
 
 develop: $(PREREQ) custom $(DEPLOY)
 	_plugins.develop $(NAME)
-	@if test -f package.json; then plugin_wrapper $(NAME) -- npm install; fi
