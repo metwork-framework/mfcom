@@ -53,6 +53,8 @@ if args.subcommand not in ("list", "create"):
 if args.subcommand == 'list':
     print("List of availabel plugin templates:")
     for plugin in os.listdir(PLUGIN_TEMPLATES_PATH):
+        if plugin.startswith('_'):
+            continue
         print('     * %s' % (plugin))
     parser.exit(status=0)
 
@@ -74,7 +76,8 @@ if b is False:
 
 extra_context = {"name": args.plugin}
 res = cookiecutter(template_path, extra_context=extra_context,
-                   no_input=args.no_input)
+                   no_input=args.no_input,
+                   search_paths=[PLUGIN_TEMPLATES_PATH])
 
 if not os.path.isdir(res):
     print("ERROR : cookiecutter result is not a valid directory")
