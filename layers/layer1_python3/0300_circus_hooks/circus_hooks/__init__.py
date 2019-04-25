@@ -15,10 +15,15 @@ def _call(cmd):
     return True
 
 
-def _conditional_call(prefix, watcher_name):
-    cmd = "%s_%s" % (prefix, watcher_name)
+def _conditional_call(prefix, watcher_name, params=None):
+    if watcher_name is not None:
+        cmd = "%s_%s" % (prefix, watcher_name)
+    else:
+        cmd = prefix
     r = BashWrapper("which %s" % cmd)
     if r.code == 0:
+        if params is not None:
+            cmd = "%s %s" % (cmd, " ".join(params))
         return _call(cmd)
     else:
         return True
@@ -38,3 +43,21 @@ def after_start_shell(watcher, arbiter, hook_name, **kwargs):
 
 def before_stop_shell(watcher, arbiter, hook_name, **kwargs):
     return _conditional_call("before_stop", watcher.name)
+
+
+def before_signal_shell(watcher, arbiter, hook_name, pid, signum, **kwargs):
+    return _conditional_call("before_signal", watcher.name, [pid, signum])
+
+
+def after_signal_shell(watcher, arbiter, hook_name, pid, signum, **kwargs):
+    return _conditional_call("before_signal", watcher.name, [pid, signum])
+
+
+def before_signal_shell2(watcher, arbiter, hook_name, pid, signum, **kwargs):
+    return _conditional_call("before_signal", None,
+                             [watcher.name, str(pid), str(signum)])
+
+
+def after_signal_shell2(watcher, arbiter, hook_name, pid, signum, **kwargs):
+    return _conditional_call("before_signal", None,
+                             [watcher.name, str(pid), str(signum)])
