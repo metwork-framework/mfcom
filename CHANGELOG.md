@@ -10,6 +10,8 @@
 - introduce mflog_addon
 - add a plugin name validation in bootstrap
 - add a validate_plugin_name feature in mfutil
+- allow plugin template inheritance
+- better plugin Makefile
 
 
 
