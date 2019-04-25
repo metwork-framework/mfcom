@@ -1,4 +1,4 @@
-"""utility functions around network."""
+"""Utility functions around network."""
 
 import logging
 import socket
@@ -71,7 +71,7 @@ def get_domainname(use_resolv_conf=True, resolv_conf_file="/etc/resolv.conf"):
     The domain name does not include the hostname.
 
     We try first with the getfqdn method then with the resolv.conf file because
-        the domain can be found here.
+    the domain can be found here.
 
     Args:
         use_resolv_conf (boolean): if set to True, we use the resolv.conf file.
