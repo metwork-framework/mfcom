@@ -46,6 +46,7 @@ def plugin_name_to_layerapi2_label(plugin_name):
 
      Returns:
          (string): the layerapi2 label.
+
     """
     return "plugin_%s@%s" % (plugin_name, MODULE_LOWERCASE)
 
@@ -57,6 +58,7 @@ def layerapi2_label_to_plugin_name(label):
         label (string): the label from which we extract the plugin name.
     Returns:
          (string): the plugin name.
+
     """
     if (not label.startswith("plugin_")) or \
             (not label.endswith("@%s" % MODULE_LOWERCASE)):
@@ -73,6 +75,7 @@ def get_layer_home_from_plugin_name(plugin_name):
 
     Returns:
          (string): the home layer.
+
     """
     label = plugin_name_to_layerapi2_label(plugin_name)
     return LayerApi2Wrapper.get_layer_home(label)
@@ -82,10 +85,12 @@ def layerapi2_label_file_to_plugin_name(llf_path):
     """Get the plugin name from the layerapi2 label file.
 
     Args:
-        llf_path (string): the layerapi2 label file path from which we extract the label.
+        llf_path (string): the layerapi2 label file path from which
+        we extract the label.
 
     Returns:
          (string): the plugin name.
+
     """
     try:
         with open(llf_path, 'r') as f:
@@ -290,8 +295,8 @@ def uninstall_plugin(name, plugins_base_dir=None,
         name (string): the plugin name to uninstall.
         plugins_base_dir (string): (optional) the plugin base directory path.
             If not set, the default plugins base directory path is used.
-        ignore_errors (boolean): If True, errors are ignored, otherwise fails on errors.
-            Default value is False.
+        ignore_errors (boolean): If True, errors are ignored,
+        otherwise fails on errors. Default value is False.
         quiet (boolean): quiet mode to reduce output printing.
             Default value is False.
 
@@ -301,7 +306,6 @@ def uninstall_plugin(name, plugins_base_dir=None,
         MFUtilPluginCantUninstall: if the plugin can't be uninstalled.
 
     """
-
     _assert_plugins_base_initialized(plugins_base_dir)
     plugins_base_dir = _get_plugins_base_dir(plugins_base_dir)
     infos = get_plugin_info(name, mode="name",
@@ -353,7 +357,11 @@ def _postinstall_plugin(name, version, release, quiet=False):
 
 
 def is_dangerous_plugin(name):
-    """Display on the standard output (stdout) the result of the ``_plugins.is_dangerous`` command for a plugin.
+    """Display is_dangerous_plugin command.
+
+    Display on the standard output (stdout) the result of the
+    ``_plugins.is_dangerous`` command for a plugin.
+
     The ``_plugins.is_dangerous`` displays warnings for "dangerous" plugins,
     i.e. likely to have impacts on other modules and/or other plugins.
 
@@ -387,8 +395,8 @@ def install_plugin(plugin_filepath, plugins_base_dir=None,
         plugin_filepath (string): the plugin file path.
         plugins_base_dir (string): (optional) the plugin base directory path.
             If not set, the default plugins base directory path is used.
-        ignore_errors (boolean): If True, errors are ignored, otherwise fails on errors.
-            Default value is False.
+        ignore_errors (boolean): If True, errors are ignored,
+        otherwise fails on errors. Default value is False.
         quiet (boolean): quiet mode to reduce output printing.
             Default value is False.
 
@@ -456,8 +464,8 @@ def develop_plugin(plugin_path, name, plugins_base_dir=None,
         name (string): name of the plugin.
         plugins_base_dir (string): (optional) the plugin base directory path.
             If not set, the default plugins base directory path is used.
-        ignore_errors (boolean): If True, errors are ignored, otherwise fails on errors.
-            Default value is False.
+        ignore_errors (boolean): If True, errors are ignored,
+        otherwise fails on errors. Default value is False.
         quiet (boolean): quiet mode to reduce output printing.
             Default value is False.
 
@@ -563,9 +571,12 @@ def get_plugin_info(name_or_filepath, mode="auto", plugins_base_dir=None):
     Args:
         name_or_filepath (string): name or file path of the plugin.
         mode (string)
-            - "name": get information from the plugin name (name_or_filepath is the name of the plugin).
-            - "file": get information from the plutgin file (name_or_filepath is the plugin file path).
-            - "auto": guess if the name_or_filepath parameter is the name or the file path of the plugin.
+            - "name": get information from the plugin name
+            (name_or_filepath is the name of the plugin).
+            - "file": get information from the plutgin file
+            (name_or_filepath is the plugin file path).
+            - "auto": guess if the name_or_filepath parameter is the name
+            or the file path of the plugin.
         plugins_base_dir (string): (optional) the plugin base directory path.
             If not set, the default plugins base directory path is used.
 
@@ -576,7 +587,6 @@ def get_plugin_info(name_or_filepath, mode="auto", plugins_base_dir=None):
         MFUtilPluginBaseNotInitialized: if the plugins base is not initialized.
 
     """
-
     plugins_base_dir = _get_plugins_base_dir(plugins_base_dir)
     _assert_plugins_base_initialized(plugins_base_dir)
     res = {}
@@ -638,26 +648,31 @@ def get_plugin_info(name_or_filepath, mode="auto", plugins_base_dir=None):
 
 
 def get_plugin_hash(name_or_filepath, mode="auto", plugins_base_dir=None):
-    """Get detailed information about a plugin
-    (same as :func:`get_plugin_info` except it returns MD5 hexadecimal digest data)
+    """Get detailed information about a plugin.
+
+    (same as :func:`get_plugin_info` except it returns
+    MD5 hexadecimal digest data).
 
     Args:
         name_or_filepath (string): name or file path of the plugin.
         mode (string)
-            - "name": get information from the plugin name (name_or_filepath is the name of the plugin).
-            - "file": get information from the plutgin file (name_or_filepath is the plugin file path).
-            - "auto": guess if the name_or_filepath parameter is the name or the file path of the plugin.
+            - "name": get information from the plugin name
+            (name_or_filepath is the name of the plugin).
+            - "file": get information from the plutgin file
+            (name_or_filepath is the plugin file path).
+            - "auto": guess if the name_or_filepath parameter is the name
+            or the file path of the plugin.
         plugins_base_dir (string): (optional) the plugin base directory path.
             If not set, the default plugins base directory path is used.
 
     Returns:
-        (string): MD5 hexadecimal digest data representing standing for the  plugin information
+        (string): MD5 hexadecimal digest data representing standing
+        for the plugin information
 
     Raises:
         MFUtilPluginBaseNotInitialized: if the plugins base is not initialized.
 
     """
-
     infos = get_plugin_info(name_or_filepath, mode=mode,
                             plugins_base_dir=plugins_base_dir)
     if infos is None:
