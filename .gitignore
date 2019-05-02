@@ -26,5 +26,13 @@ doc/layer_*.md
 *.swp
 doc/layer_*.rst
 doc/mflog.rst
-doc/mfutil.rst
 **.whl
+doc/api
+doc/configure_a_metwork_package.md
+doc/configure_a_metwork_package.rst
+doc/configure_metwork_repo.md
+doc/configure_metwork_repo.rst
+doc/install_a_metwork_package.md
+doc/install_a_metwork_package.rst
+CHANGELOG*.md
+CHANGELOG*.rst

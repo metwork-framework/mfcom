@@ -1,4 +1,4 @@
-"""utility functions to build CLI."""
+"""Utility functions to build CLI."""
 
 from __future__ import print_function
 import six

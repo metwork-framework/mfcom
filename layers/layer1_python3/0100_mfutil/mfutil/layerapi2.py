@@ -1,4 +1,4 @@
-"""utility functions around layerapi2."""
+"""Utility functions around layerapi2."""
 
 import six
 from mfutil.glib2 import Glib2Wrapper
