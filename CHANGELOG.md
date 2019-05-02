@@ -12,6 +12,8 @@
 - add a validate_plugin_name feature in mfutil
 - allow plugin template inheritance
 - better plugin Makefile
+- add nginxfmt.py utility (moved from mfserv)
+- add more hooks for circus
 
 
 
