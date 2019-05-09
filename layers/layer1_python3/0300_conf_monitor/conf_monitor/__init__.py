@@ -174,10 +174,10 @@ class ConfMonitorRunner(object):
     def run(self):
         LOGGER.info("starting")
         init_signals()
-        touch_control_file()
         ih = INotify()
         wds = {}
         register_watches(ih, wds)
+        touch_control_file()
         got_events = True
         while RUN:
             if got_events:
