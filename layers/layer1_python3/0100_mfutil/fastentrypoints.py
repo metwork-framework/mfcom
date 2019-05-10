@@ -49,7 +49,7 @@ from {0} import {1}
 
 if __name__ == '__main__':
     sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
-    sys.exit({2}())'''
+    sys.exit({2}())'''  # noqa: W605
 
 
 @classmethod
@@ -87,7 +87,7 @@ def main():
     import shutil
     import sys
     dests = sys.argv[1:] or ['.']
-    filename = re.sub('\.pyc$', '.py', __file__)
+    filename = re.sub('\.pyc$', '.py', __file__)  # noqa: W605
 
     for dst in dests:
         shutil.copy(filename, dst)
@@ -99,8 +99,9 @@ def main():
             manifest.seek(0)
             manifest_content = manifest.read()
             if 'include fastentrypoints.py' not in manifest_content:
-                manifest.write(('\n' if manifest_content else '') +
-                               'include fastentrypoints.py')
+                manifest.write(
+                    ('\n' if manifest_content else '') + 'include '
+                    'fastentrypoints.py')
 
         # Insert the import statement to setup.py if not present
         with open(setup_path, 'a+') as setup:
