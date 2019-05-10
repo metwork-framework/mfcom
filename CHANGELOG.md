@@ -16,6 +16,10 @@
 - add more hooks for circus
 
 
+### Bug Fixes
+- fix an automatic reload issue in some corner cases
+- fix typo
+
 
 
 
