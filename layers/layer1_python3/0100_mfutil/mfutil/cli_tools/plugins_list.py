@@ -4,6 +4,7 @@ import argparse
 import sys
 import json
 from mfutil.plugins import get_installed_plugins
+from terminaltables import SingleTable
 
 DESCRIPTION = "get the installed plugins list"
 
@@ -18,19 +19,16 @@ def main():
         print("ERROR: json and raw options are mutually exclusives")
         sys.exit(1)
     plugins = get_installed_plugins()
-    if not args.raw and not args.json:
-        print("Installed plugins:")
-        print()
-        print("| %-25s | %-25s | %.25s" % ("NAME", "VERSION", "RELEASE"))
-        print("-" * 75)
     json_output = []
+    table_data = []
+    table_data.append(["Name", "Version", "Release", "Home"])
     for plugin in plugins:
         name = plugin['name']
         release = plugin['release']
         version = plugin['version']
         home = plugin['home']
         if args.raw:
-            print("%s~~~%s~~~%s" % (name, version, release))
+            print("%s~~~%s~~~%s~~~%s" % (name, version, release, home))
         elif args.json:
             json_output.append({
                 "name": name,
@@ -39,10 +37,11 @@ def main():
                 "home": home
             })
         else:
-            print("| %-25s | %-25s | %.25s" % (name, version, release))
+            table_data.append([name, version, release, home])
     if not args.raw and not args.json:
-        print()
-        print("Total: %i plugin(s)" % len(plugins))
+        t = SingleTable(title="Installed plugins (%i)" % len(plugins),
+                        table_data=table_data)
+        print(t.table)
     elif args.json:
         print(json.dumps(json_output, indent=4))
 
