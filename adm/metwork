@@ -100,39 +100,63 @@ version_module() {
 }
 
 fix_system() {
-  if test -f /etc/sysctl_metwork.conf; then
-    /sbin/sysctl -p /etc/sysctl_metwork.conf >/dev/null
+  USR=$(echo "${1}" |awk -F '@' '{print $1;}')
+  HOM=$(echo "${1}" |awk -F '@' '{print $2;}')
+  MFCOM_HOME=$("${HOM}/bin/${USR}_wrapper" env |grep ^MFCOM_HOME= |awk -F '=' '{print $2;}')
+  N=$(grep -c docker /proc/1/cgroup 2>/dev/null)
+  if test "${N}" -gt 0; then
+    DOCKER_MODE=1
+  else
+    DOCKER_MODE=0
   fi
-  if test -f /sys/kernel/mm/redhat_transparent_hugepage/enabled; then
-    echo never > /sys/kernel/mm/redhat_transparent_hugepage/enabled
+  if test -f "${MFCOM_HOME}/config/sysctl_metwork.conf"; then
+    if test "${DOCKER_MODE}" = "0"; then
+      if ! test -f "/etc/metwork.config.d/system/no_sysctl"; then
+        echo -n "System: applying ${MFCOM_HOME}/config/sysctl_metwork.conf... "
+        /sbin/sysctl -p "${MFCOM_HOME}/config/sysctl_metwork.conf" >/dev/null
+        if test $? -eq 0; then
+          echo "Ok"
+        else
+          echo "ERROR"
+        fi
+      fi
+    fi
   fi
+  if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
+    if ! test -f "/etc/metwork.config.d/system/no_sysctl"; then
+      echo -n "System: disabling transparent_hugepage... "
+      echo never > /sys/kernel/mm/transparent_hugepage/enabled
+      if test $? -eq 0; then
+        echo "Ok"
+      else
+        echo "ERROR"
+      fi
+    fi
+  fi
+  echo ""
+  echo ""
 }
 
 something_to_startstop() {
-  SOMETHING=0
-  for MOD in ${MODULES}; do
+  RES=""
+  for USR in ${MODULES}; do
     HOM=$(dirname "$(dirname "$(readlink "$(eval echo "~${USR}")/.bashrc")")")
     if test "${HOM}" != "."; then
       if test -d "${HOM}"; then
-        if test -x "${HOM}/bin/${MODU}.start"; then
-          SOMETHING=1
+        if test -x "${HOM}/bin/${USR}.start"; then
+          RES="${USR}@${HOM}"
           break
         fi
       fi
     fi
   done
-  echo ${SOMETHING}
+  echo "${RES}"
 }
 
 start() {
-  SOMETHING=$(something_to_startstop)
-  if test "${SOMETHING}" = "1"; then
-    if test "${DOCKER_MODE}" != "1"; then
-        fix_system
-    fi
-  fi
+  M=$(something_to_startstop)
   if test "${1}" = "" -o "${1}" = "all"; then
-    if test "${SOMETHING}" = "1"; then
+    if test "${M}" != ""; then
         echo "==========================================================="
         echo "==========                                       =========="
         echo "==========     STARTING METWORK SERVICES         =========="
@@ -140,6 +164,7 @@ start() {
         echo "==========================================================="
         echo " "
         echo " "
+        fix_system "${M}"
     fi
     for MOD in ${MODULES}; do
       start_module "${MOD}" "${MOD}"
@@ -215,9 +240,9 @@ init() {
 }
 
 stop() {
-  SOMETHING=$(something_to_startstop)
+  M=$(something_to_startstop)
   if test "${1}" = "" -o "${1}" = "all"; then
-    if test "${SOMETHING}" = "1"; then
+    if test "${M}" != ""; then
         echo "======================================================="
         echo "==========                                   =========="
         echo "==========     STOPPING METWORK SERVICES     =========="
