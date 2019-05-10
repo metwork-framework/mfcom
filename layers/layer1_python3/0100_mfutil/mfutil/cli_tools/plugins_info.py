@@ -12,11 +12,16 @@ def main():
     arg_parser.add_argument("name_or_filepath", type=str,
                             help="installed plugin name (without version) or "
                             "full plugin filepath")
+    arg_parser.add_argument("--just-home", action="store_true",
+                            help="if set, just return plugin home")
     args = arg_parser.parse_args()
 
     infos = get_plugin_info(args.name_or_filepath)
     if infos is None:
         sys.exit(1)
+    if args.just_home:
+        print(infos['home'])
+        sys.exit(0)
 
     print("Metadata:")
     print()
