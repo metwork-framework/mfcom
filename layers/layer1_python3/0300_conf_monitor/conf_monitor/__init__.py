@@ -12,8 +12,8 @@ from mfutil.plugins import get_installed_plugins
 
 RUN = True
 LOGGER = getLogger("conf_monitor")
-MODULE_RUNTIME_HOME = os.environ['MODULE_RUNTIME_HOME']
-MODULE_RUNTIME_USER = os.environ['MODULE_RUNTIME_USER']
+MODULE_RUNTIME_HOME = os.environ.get('MODULE_RUNTIME_HOME', None)
+MODULE_RUNTIME_USER = os.environ.get('MODULE_RUNTIME_USER', None)
 MODULE_HOME = os.environ['MODULE_HOME']
 
 
