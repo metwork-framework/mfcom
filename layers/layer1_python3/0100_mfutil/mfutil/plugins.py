@@ -33,6 +33,10 @@ def validate_plugin_name(plugin_name):
     """
     if plugin_name.startswith("plugin_"):
         return (False, "A plugin name can't start with 'plugin_'")
+    if plugin_name.startswith("__"):
+        return (False, "A plugin name can't start with '__'")
+    if plugin_name == "base":
+        return (False, "A plugin name can't be 'base'")
     if not re.match(PLUGIN_NAME_REGEXP, plugin_name):
         return (False, "A plugin name must follow %s" % PLUGIN_NAME_REGEXP)
     return (True, None)
