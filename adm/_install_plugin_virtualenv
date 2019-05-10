@@ -18,7 +18,13 @@ if test "${1}" = "--help"; then
     exit 0
 fi
 
-PLUGIN_HOME="${MODULE_RUNTIME_HOME}/var/plugins/${NAME}"
+PLUGIN_HOME=$(plugins.info --just-home "${NAME}" || true)
+if test "${PLUGIN_HOME}" = ""; then
+    # maybe this is a devlink
+    # let's hardcode this
+    PLUGIN_HOME="${MODULE_RUNTIME_HOME}/var/plugins/${NAME}"
+fi
+
 if ! test -f "${PLUGIN_HOME}/.layerapi2_dependencies"; then
     # on essaye pwd (le plugin est peut etre pas encore installe)
     PLUGIN_HOME=$(pwd)
