@@ -14,6 +14,7 @@
 - better plugin Makefile
 - add nginxfmt.py utility (moved from mfserv)
 - add more hooks for circus
+- fix_system feature moved to mfcom (sysctl stuff)
 
 
 ### Bug Fixes
