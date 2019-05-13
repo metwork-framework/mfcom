@@ -3,7 +3,7 @@
 import argparse
 import sys
 from mfutil.plugins import uninstall_plugin, \
-    MFUtilPluginNotInstalled, MFUtilPluginCantUninstall
+    MFUtilPluginNotInstalled, MFUtilPluginCantUninstall, inside_a_plugin_env
 from mfutil.cli import echo_running, echo_nok, echo_ok
 
 DESCRIPTION = "uninstall a plugin"
@@ -17,10 +17,13 @@ def main():
                             action="store_true")
     args = arg_parser.parse_args()
     name = args.name
+    if inside_a_plugin_env():
+        print("ERROR: Don't use plugins.install/uninstall inside a plugin_env")
+        sys.exit(1)
     echo_running("- Uninstalling plugin %s..." % name)
     try:
         uninstall_plugin(name, ignore_errors=args.force)
-    except MFUtilPluginNotInstalled as e:
+    except MFUtilPluginNotInstalled:
         echo_nok("not installed")
         sys.exit(1)
     except MFUtilPluginCantUninstall as e:

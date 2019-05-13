@@ -16,6 +16,7 @@ from configparser_extended import ExtendedConfigParser
 RUNTIME_HOME = os.environ.get('MODULE_RUNTIME_HOME', '/tmp')
 MFEXT_HOME = os.environ['MFEXT_HOME']
 MODULE_LOWERCASE = os.environ['MODULE_LOWERCASE']
+MODULE = os.environ['MODULE']
 SPEC_TEMPLATE = os.path.join(MFEXT_HOME, "share", "templates", "plugin.spec")
 PLUGIN_NAME_REGEXP = "^[A-Za-z0-9_-]+$"
 
@@ -33,6 +34,10 @@ def validate_plugin_name(plugin_name):
     """
     if plugin_name.startswith("plugin_"):
         return (False, "A plugin name can't start with 'plugin_'")
+    if plugin_name.startswith("__"):
+        return (False, "A plugin name can't start with '__'")
+    if plugin_name == "base":
+        return (False, "A plugin name can't be 'base'")
     if not re.match(PLUGIN_NAME_REGEXP, plugin_name):
         return (False, "A plugin name must follow %s" % PLUGIN_NAME_REGEXP)
     return (True, None)
@@ -79,6 +84,16 @@ def get_layer_home_from_plugin_name(plugin_name):
     """
     label = plugin_name_to_layerapi2_label(plugin_name)
     return LayerApi2Wrapper.get_layer_home(label)
+
+
+def inside_a_plugin_env():
+    """Return True if we are inside a plugin_env.
+
+    Returns:
+        (boolean): True if we are inside a plugin_env, False else
+
+    """
+    return ("%s_CURRENT_PLUGIN_NAME" % MODULE) in os.environ
 
 
 def layerapi2_label_file_to_plugin_name(llf_path):
