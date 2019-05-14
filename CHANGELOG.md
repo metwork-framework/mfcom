@@ -15,6 +15,12 @@
 - add nginxfmt.py utility (moved from mfserv)
 - add more hooks for circus
 - fix_system feature moved to mfcom (sysctl stuff)
+- add inside_a_plugin_env() function to mfutil.plugins
+- a plugin name can't be 'base' and can't start with '__'
+- don't use plugin dirname as name
+- better table output and add plugin homes to raw output
+- add a --just-home option to plugins.info
+- prevent plugins.install/uninstall to be used in a plugin_env
 
 
 ### Bug Fixes
