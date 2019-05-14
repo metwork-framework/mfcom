@@ -28,12 +28,11 @@ which are note in current modules, during documentation build.
 .. automodapi:: mfutil.cli
    :include-all-objects:
 
-.. todo:: Check if mfutil.jinja2_extensions is needed in documentation.
-.. automodapi:: mfutil.jinja2_extensions
-   :include-all-objects:
-   :skip: Extension
+.. Comment
+    .. automodapi:: mfutil.jinja2_extensions
+       :include-all-objects:
+       :skip: Extension
 
-.. todo:: Check if mfutil.layerapi2 is needed in documentation.
 .. automodapi:: mfutil.layerapi2
    :include-all-objects:
    :skip: Glib2Wrapper, c_char, c_char_p, c_int
