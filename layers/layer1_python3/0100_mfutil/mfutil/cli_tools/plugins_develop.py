@@ -3,7 +3,8 @@
 import argparse
 import sys
 from mfutil.plugins import develop_plugin, \
-    MFUtilPluginAlreadyInstalled, is_dangerous_plugin
+    MFUtilPluginAlreadyInstalled, is_dangerous_plugin, \
+    touch_conf_monitor_control_file
 from mfutil.cli import echo_ok, echo_running, echo_nok
 
 DESCRIPTION = "develop a plugin from a directory"
@@ -21,8 +22,10 @@ def main():
         develop_plugin(args.plugin_path, args.name)
     except MFUtilPluginAlreadyInstalled:
         echo_nok("already installed")
+        touch_conf_monitor_control_file()
         sys.exit(1)
     echo_ok()
+    touch_conf_monitor_control_file()
     is_dangerous_plugin(args.name)
 
 

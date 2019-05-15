@@ -361,14 +361,9 @@ def uninstall_plugin(name, plugins_base_dir=None,
                                         "(directory still here)" % name)
 
 
-def _postinstall_plugin(name, version, release, quiet=False):
-    res = BashWrapper("_plugins.postinstall %s %s %s" %
-                      (name, version, release))
-    if not res:
-        if not quiet:
-            __get_logger().warning("error during postinstall: %s", res)
-        return False
-    return True
+def _postinstall_plugin(name, version, release):
+    return BashWrapper("_plugins.postinstall %s %s %s" %
+                       (name, version, release))
 
 
 def is_dangerous_plugin(name):
@@ -447,13 +442,14 @@ def install_plugin(plugin_filepath, plugins_base_dir=None,
     if infos is None:
         raise MFUtilPluginCantInstall("can't install plugin %s" % name,
                                       bash_wrapper=x)
-    postinstall_status = _postinstall_plugin(name, version, release,
-                                             quiet=quiet)
+    postinstall_status = _postinstall_plugin(name, version, release)
     if not postinstall_status and not ignore_errors:
         try:
             uninstall_plugin(name, plugins_base_dir, True, True)
         except Exception:
             pass
+        raise MFUtilPluginCantInstall("can't install plugin %s" % name,
+                                      bash_wrapper=postinstall_status)
 
 
 def _make_plugin_spec(dest_file, name, version, summary, license, packager,
@@ -468,6 +464,10 @@ def _make_plugin_spec(dest_file, name, version, summary, license, packager,
     res = envtpl.render_string(res)
     with open(dest_file, "w") as f:
         f.write(res)
+
+
+def touch_conf_monitor_control_file():
+    BashWrapper("touch %s/var/conf_monitor" % RUNTIME_HOME)
 
 
 def develop_plugin(plugin_path, name, plugins_base_dir=None,
@@ -497,13 +497,14 @@ def develop_plugin(plugin_path, name, plugins_base_dir=None,
         os.symlink(plugin_path, os.path.join(plugins_base_dir, name))
     except OSError:
         pass
-    postinstall_status = _postinstall_plugin(name, "dev_link", "dev_link",
-                                             quiet=quiet)
+    postinstall_status = _postinstall_plugin(name, "dev_link", "dev_link")
     if not postinstall_status and not ignore_errors:
         try:
             uninstall_plugin(name, plugins_base_dir, True, True)
         except Exception:
             pass
+        raise MFUtilPluginCantInstall("can't install plugin %s" % name,
+                                      bash_wrapper=postinstall_status)
 
 
 def _is_dev_link_plugin(name, plugins_base_dir=None):
