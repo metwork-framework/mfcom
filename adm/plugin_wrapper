@@ -12,6 +12,9 @@ MODULE_LOWERCASE = os.environ["MODULE_LOWERCASE"]
 
 
 parser = argparse.ArgumentParser(description=DESCRIPTION)
+parser.add_argument("--cwd",
+                    action="store_true",
+                    help="change working directory to plugin home")
 parser.add_argument("--do-not-add-plugin-dir-to-python-path",
                     action="store_true",
                     help="do not add plugin directory to PYTHONPATH")
@@ -41,6 +44,8 @@ if layer_dir is None:
 lw_args = ["--empty",
            "--extra-env-prefix=%s_CURRENT_PLUGIN" % MODULE,
            "--layers=%s" % layer_name]
+if args.cwd:
+    lw_args.append("--cwd")
 if args.do_not_add_plugin_dir_to_python_path is not True:
     lw_args.append("--prepend-env=PYTHONPATH,%s" % layer_dir)
 if args.add_extra_dir_to_python_path is not None:
