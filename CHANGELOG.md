@@ -26,6 +26,7 @@
 ### Bug Fixes
 - fix an automatic reload issue in some corner cases
 - fix typo
+- fix bug CHANGELOGS not generated when CHANGELOGS.md doesn't exist (for the first time)
 
 
 
