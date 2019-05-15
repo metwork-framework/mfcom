@@ -39,12 +39,19 @@ def is_status_running():
 
 def is_running_plugin_install():
     cmd = "pgrep -u '%s' -f 'plugins.install' |wc -l" % MODULE_RUNTIME_USER
-    x = BashWrapperOrRaise(cmd)
-    if int(x.stdout) > 0:
+    x = BashWrapper(cmd)
+    # >1 and not 0 because with BashWrapper, it counts itself
+    if int(x.stdout) > 1:
         return True
     cmd = "pgrep -u '%s' -f 'plugins.uninstall' |wc -l" % MODULE_RUNTIME_USER
-    x = BashWrapperOrRaise(cmd)
-    if int(x.stdout) > 0:
+    x = BashWrapper(cmd)
+    # >1 and not 0 because with BashWrapper, it counts itself
+    if int(x.stdout) > 1:
+        return True
+    cmd = "pgrep -u '%s' -f '_plugins.develop' |wc -l" % MODULE_RUNTIME_USER
+    x = BashWrapper(cmd)
+    # >1 and not 0 because with BashWrapper, it counts itself
+    if int(x.stdout) > 1:
         return True
     return False
 
@@ -199,7 +206,7 @@ class ConfMonitorRunner(object):
                 touch_control_file()
                 time.sleep(2)
                 continue
-            if not is_running_plugin_install():
+            if is_running_plugin_install():
                 LOGGER.info("plugin installation/uninstallation in progress "
                             "=> ignoring...")
                 touch_control_file()
