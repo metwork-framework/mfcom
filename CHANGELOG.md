@@ -21,12 +21,16 @@
 - better table output and add plugin homes to raw output
 - add a --just-home option to plugins.info
 - prevent plugins.install/uninstall to be used in a plugin_env
+- add a cwd option to plugin_wrapper
+- use new --cwd option when calling postinstall script
 
 
 ### Bug Fixes
 - fix an automatic reload issue in some corner cases
 - fix typo
 - fix bug CHANGELOGS not generated when CHANGELOGS.md doesn't exist (for the first time)
+- fix conf_monitor behaviour during plugins (un)install
+- fix some corner issues during plugins.install/uninstall
 
 
 
