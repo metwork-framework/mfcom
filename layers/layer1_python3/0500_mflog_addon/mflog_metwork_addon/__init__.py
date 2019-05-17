@@ -13,6 +13,6 @@ def extra_context():
     extra_context = {
         "plugin": PLUGIN
     }
-    if REQUEST_ID_ENV_VAR in os.environ:
+    if "REQUEST_ID_ENV_VAR" in os.environ:
         extra_context["request_id"] = os.environ["REQUEST_ID_ENV_VAR"]
     return extra_context
