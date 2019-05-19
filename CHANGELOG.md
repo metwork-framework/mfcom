@@ -1,6 +1,18 @@
 # release_0.6 CHANGELOG
 
 
+## [Unreleased]
+
+### New Features
+
+
+### Bug Fixes
+- fix conf_monitor behaviour during plugins (un)install
+- fix some corner issues during plugins.install/uninstall
+
+
+
+
 
 ## v0.6.0 (2019-03-31)
 
