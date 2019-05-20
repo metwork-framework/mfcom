@@ -7,10 +7,10 @@ MFCOM documentation
    :name: mfdatatoc
    :maxdepth: 3
 
+   mfcom_intro
    configure_metwork_repo
    install_a_metwork_package
    configure_a_metwork_package
-   mfcom_intro
    mfutil
    circus_hooks
    conf_monitor
