@@ -16,7 +16,8 @@ SOCKET_PATH = os.path.join(MODULE_RUNTIME_HOME, "var", "telegraf.socket")
 LOGGER = getLogger("telegraf_collector_metwork_module")
 MODULE = os.environ['MODULE']
 CMD = "list_metwork_processes.py --output-format=json --include-current-family"
-MONITORING_CMDLINE_PATTERNS = ['*telegraf*', '*list_metwork_processes*']
+MONITORING_CMDLINE_PATTERNS = ['*telegraf*', '*list_metwork_processes*',
+                               '*jsonlog2elasticsearch*']
 IS_MONITORING_MODULE = (MODULE in ['MFSYSMON', 'MFADMIN'])
 
 
