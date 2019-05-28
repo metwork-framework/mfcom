@@ -6,4 +6,4 @@ if test "${UUID}" = ""; then
 fi
 export UUID
 
-cat "${MODULE_HOME}/config/nginx.conf" |envtpl
+cat "${MODULE_HOME}/config/nginx.conf" |envtpl --reduce-multi-blank-lines
