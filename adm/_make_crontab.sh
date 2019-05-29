@@ -12,7 +12,7 @@ if test "${MODULE_RUNTIME_SUFFIX:-}" != ""; then
 fi
 export RUNTIME_SUFFIX
 
-cat "${MODULE_HOME}/config/crontab" |envtpl
+cat "${MODULE_HOME}/config/crontab" |envtpl --reduce-multi-blank-lines
 
 if test -d "${MODULE_RUNTIME_HOME}/var/plugins"; then
     for TMP in $(plugins.list --raw); do
@@ -20,7 +20,7 @@ if test -d "${MODULE_RUNTIME_HOME}/var/plugins"; then
         NAME=$(echo "${TMP}" |awk -F '~~~' '{print $1;}')
         if test -s "${BDIR}/crontab"; then
             echo "##### BEGINNING OF METWORK ${MODULE} PLUGIN ${NAME} CRONTAB #####"
-            cat "${BDIR}/crontab" | envtpl
+            cat "${BDIR}/crontab" | envtpl --reduce-multi-blank-lines
             echo "##### END OF METWORK ${MODULE} PLUGIN ${NAME} CRONTAB #####"
         fi
     done

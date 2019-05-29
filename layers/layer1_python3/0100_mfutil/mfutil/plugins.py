@@ -459,9 +459,10 @@ def _make_plugin_spec(dest_file, name, version, summary, license, packager,
     extra_vars = {"NAME": name, "VERSION": version, "SUMMARY": summary,
                   "LICENSE": license, "PACKAGER": packager, "VENDOR": vendor,
                   "URL": url}
-    res = envtpl.render_string(template, extra_variables=extra_vars)
+    res = envtpl.render_string(template, extra_variables=extra_vars,
+                               keep_multi_blank_lines=False)
     # because, you can have some template inside extra vars
-    res = envtpl.render_string(res)
+    res = envtpl.render_string(res, keep_multi_blank_lines=False)
     with open(dest_file, "w") as f:
         f.write(res)
 
