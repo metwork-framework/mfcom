@@ -4,6 +4,7 @@
 ## [Unreleased]
 
 ### New Features
+- jsonlog2elasticsearch is classified as monitoring process
 - use new --cwd option when calling postinstall script
 - add a cwd option to plugin_wrapper
 - prevent plugins.install/uninstall to be used in a plugin_env
