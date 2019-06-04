@@ -4,11 +4,11 @@ import os
 import signal
 import time
 import hashlib
-from pathlib import Path
+import filelock
 from inotify_simple import flags, INotify
 from mflog import getLogger
 from mfutil import BashWrapperOrRaise, BashWrapper
-from mfutil.plugins import get_installed_plugins
+from mfutil.plugins import get_installed_plugins, get_plugin_lock_path
 
 RUN = True
 LOGGER = getLogger("conf_monitor")
@@ -35,25 +35,6 @@ def is_status_running():
     except Exception:
         status = "unknown"
     return ("RUNNING" in status)
-
-
-def is_running_plugin_install():
-    cmd = "pgrep -u '%s' -f 'plugins.install' |wc -l" % MODULE_RUNTIME_USER
-    x = BashWrapper(cmd)
-    # >1 and not 0 because with BashWrapper, it counts itself
-    if int(x.stdout) > 1:
-        return True
-    cmd = "pgrep -u '%s' -f 'plugins.uninstall' |wc -l" % MODULE_RUNTIME_USER
-    x = BashWrapper(cmd)
-    # >1 and not 0 because with BashWrapper, it counts itself
-    if int(x.stdout) > 1:
-        return True
-    cmd = "pgrep -u '%s' -f '_plugins.develop' |wc -l" % MODULE_RUNTIME_USER
-    x = BashWrapper(cmd)
-    # >1 and not 0 because with BashWrapper, it counts itself
-    if int(x.stdout) > 1:
-        return True
-    return False
 
 
 def _get_plugins_home():
@@ -132,8 +113,7 @@ def register_watches(ih, wds):
     paths = \
         get_plugins_config_ini() + ["%s/config/nginx.conf" % MODULE_HOME,
                                     "%s/config/circus.ini" % MODULE_HOME] + \
-        get_plugins_crontab() + ["%s/var/plugins" % MODULE_RUNTIME_HOME,
-                                 "%s/var/conf_monitor" % MODULE_RUNTIME_HOME]
+        get_plugins_crontab() + ["%s/var/conf_monitor" % MODULE_RUNTIME_HOME]
     for path in paths:
         register_watch(ih, wds, path)
     wds_to_unregister = []
@@ -169,10 +149,6 @@ def register_watch(ih, wds, path):
         pass
 
 
-def touch_control_file():
-    Path("%s/var/conf_monitor" % MODULE_RUNTIME_HOME).touch()
-
-
 class ConfMonitorRunner(object):
 
     def __init(self, *args, **kwargs):
@@ -184,38 +160,48 @@ class ConfMonitorRunner(object):
         ih = INotify()
         wds = {}
         register_watches(ih, wds)
-        touch_control_file()
-        got_events = True
+        force = True
+        events = []
         while RUN:
-            if got_events:
-                LOGGER.info("waiting for events...")
-            events = ih.read(1000)
-            if events is None or len(events) == 0:
-                got_events = False
-                continue
+            if force:
+                force = False
+            else:
+                events = ih.read(1000)
+                if events is None or len(events) == 0:
+                    continue
+            if len(events) > 0:
+                LOGGER.info("got events")
             for event in events:
+                try:
+                    path = wds[event.wd]
+                except KeyError:
+                    path = "unknown"
+                LOGGER.debug("%s on %s" % (event, path))
                 if not (event.mask & flags.IGNORED):
                     if event.mask & flags.DELETE_SELF:
                         path = wds[event.wd]
                         unregister_watch(ih, wds, event.wd)
                         register_watch(ih, wds, path)
-            LOGGER.info("got events")
-            got_events = True
+            try:
+                lock = filelock.FileLock(get_plugin_lock_path(), timeout=300)
+                with lock.acquire(poll_intervall=1):
+                    # ok, there is no plugins.install/uninstall running
+                    pass
+            except filelock.Timeout:
+                LOGGER.warning("can't acquire plugin management lock => "
+                               "maybe a blocked plugins.install/uninstall ? "
+                               "=> exiting")
+                break
             if not is_status_running():
                 LOGGER.info("The module is not RUNNING => ignoring...")
-                touch_control_file()
                 time.sleep(2)
-                continue
-            if is_running_plugin_install():
-                LOGGER.info("plugin installation/uninstallation in progress "
-                            "=> ignoring...")
-                touch_control_file()
-                time.sleep(2)
+                force = True
                 continue
             ret = self.handle_event()
             if not ret:
                 break
             register_watches(ih, wds)
+            LOGGER.info("waiting for events...")
         LOGGER.info("stopped")
 
     def manage_circus(self):
