@@ -8,6 +8,7 @@ import shutil
 import hashlib
 import envtpl
 import re
+import filelock
 from mfutil import BashWrapperException, BashWrapperOrRaise, BashWrapper
 from mfutil import mkdir_p_or_die, get_unique_hexa_identifier
 from mfutil.layerapi2 import LayerApi2Wrapper
@@ -302,25 +303,8 @@ def get_installed_plugins(plugins_base_dir=None):
     return result
 
 
-def uninstall_plugin(name, plugins_base_dir=None,
-                     ignore_errors=False, quiet=False):
-    """Uninstall a plugin.
-
-    Args:
-        name (string): the plugin name to uninstall.
-        plugins_base_dir (string): (optional) the plugin base directory path.
-            If not set, the default plugins base directory path is used.
-        ignore_errors (boolean): If True, errors are ignored,
-        otherwise fails on errors. Default value is False.
-        quiet (boolean): quiet mode to reduce output printing.
-            Default value is False.
-
-    Raises:
-        MFUtilPluginBaseNotInitialized: if the plugins base is not initialized.
-        MFUtilPluginNotInstalled: if the plugin is not installed.
-        MFUtilPluginCantUninstall: if the plugin can't be uninstalled.
-
-    """
+def _uninstall_plugin(name, plugins_base_dir=None,
+                      ignore_errors=False, quiet=False):
     _assert_plugins_base_initialized(plugins_base_dir)
     plugins_base_dir = _get_plugins_base_dir(plugins_base_dir)
     infos = get_plugin_info(name, mode="name",
@@ -361,6 +345,30 @@ def uninstall_plugin(name, plugins_base_dir=None,
                                         "(directory still here)" % name)
 
 
+def uninstall_plugin(name, plugins_base_dir=None,
+                     ignore_errors=False, quiet=False):
+    """Uninstall a plugin.
+
+    Args:
+        name (string): the plugin name to uninstall.
+        plugins_base_dir (string): (optional) the plugin base directory path.
+            If not set, the default plugins base directory path is used.
+        ignore_errors (boolean): If True, errors are ignored,
+        otherwise fails on errors. Default value is False.
+        quiet (boolean): quiet mode to reduce output printing.
+            Default value is False.
+
+    Raises:
+        MFUtilPluginBaseNotInitialized: if the plugins base is not initialized.
+        MFUtilPluginNotInstalled: if the plugin is not installed.
+        MFUtilPluginCantUninstall: if the plugin can't be uninstalled.
+
+    """
+    return _execute_with_lock(_uninstall_plugin, name,
+                              plugins_base_dir=plugins_base_dir,
+                              ignore_errors=ignore_errors, quiet=quiet)
+
+
 def _postinstall_plugin(name, version, release):
     return BashWrapper("_plugins.postinstall %s %s %s" %
                        (name, version, release))
@@ -397,26 +405,12 @@ def _preuninstall_plugin(name, version, release, quiet=False):
     return True
 
 
-def install_plugin(plugin_filepath, plugins_base_dir=None,
-                   ignore_errors=False, quiet=False):
-    """Install a plugin from a ``.plugin`` file.
+def get_plugin_lock_path():
+    return os.path.join(RUNTIME_HOME, 'tmp', "plugin_management_lock")
 
-    Args:
-        plugin_filepath (string): the plugin file path.
-        plugins_base_dir (string): (optional) the plugin base directory path.
-            If not set, the default plugins base directory path is used.
-        ignore_errors (boolean): If True, errors are ignored,
-        otherwise fails on errors. Default value is False.
-        quiet (boolean): quiet mode to reduce output printing.
-            Default value is False.
 
-    Raises:
-        MFUtilPluginBaseNotInitialized: if the plugins base is not initialized.
-        MFUtilPluginFileNotFound: if the ``.plugin`` file is not found.
-        MFUtilPluginAlreadyInstalled: if the plugin is already installed.
-        MFUtilPluginCantInstall: if the plugin can't be installed.
-
-    """
+def _install_plugin(plugin_filepath, plugins_base_dir=None,
+                    ignore_errors=False, quiet=False):
     _assert_plugins_base_initialized(plugins_base_dir)
     if not os.path.isfile(plugin_filepath):
         raise MFUtilPluginFileNotFound("plugin file %s not found" %
@@ -452,6 +446,44 @@ def install_plugin(plugin_filepath, plugins_base_dir=None,
                                       bash_wrapper=postinstall_status)
 
 
+def _execute_with_lock(fn, *args, **kwargs):
+    lock = filelock.FileLock(get_plugin_lock_path(), timeout=10)
+    try:
+        with lock.acquire(poll_intervall=1):
+            return fn(*args, **kwargs)
+    except filelock.Timeout:
+        __get_logger().warning("can't acquire plugin management lock "
+                               " => another plugins.install/uninstall "
+                               "running ?")
+    finally:
+        _touch_conf_monitor_control_file()
+
+
+def install_plugin(plugin_filepath, plugins_base_dir=None,
+                   ignore_errors=False, quiet=False):
+    """Install a plugin from a ``.plugin`` file.
+
+    Args:
+        plugin_filepath (string): the plugin file path.
+        plugins_base_dir (string): (optional) the plugin base directory path.
+            If not set, the default plugins base directory path is used.
+        ignore_errors (boolean): If True, errors are ignored,
+        otherwise fails on errors. Default value is False.
+        quiet (boolean): quiet mode to reduce output printing.
+            Default value is False.
+
+    Raises:
+        MFUtilPluginBaseNotInitialized: if the plugins base is not initialized.
+        MFUtilPluginFileNotFound: if the ``.plugin`` file is not found.
+        MFUtilPluginAlreadyInstalled: if the plugin is already installed.
+        MFUtilPluginCantInstall: if the plugin can't be installed.
+
+    """
+    return _execute_with_lock(_install_plugin, plugin_filepath,
+                              plugins_base_dir=plugins_base_dir,
+                              ignore_errors=ignore_errors, quiet=quiet)
+
+
 def _make_plugin_spec(dest_file, name, version, summary, license, packager,
                       vendor, url):
     with open(SPEC_TEMPLATE, "r") as f:
@@ -466,8 +498,27 @@ def _make_plugin_spec(dest_file, name, version, summary, license, packager,
         f.write(res)
 
 
-def touch_conf_monitor_control_file():
+def _touch_conf_monitor_control_file():
     BashWrapper("touch %s/var/conf_monitor" % RUNTIME_HOME)
+
+
+def _develop_plugin(plugin_path, name, plugins_base_dir=None,
+                    ignore_errors=False, quiet=False):
+    plugin_path = os.path.abspath(plugin_path)
+    plugins_base_dir = _get_plugins_base_dir(plugins_base_dir)
+    shutil.rmtree(os.path.join(plugins_base_dir, name), True)
+    try:
+        os.symlink(plugin_path, os.path.join(plugins_base_dir, name))
+    except OSError:
+        pass
+    postinstall_status = _postinstall_plugin(name, "dev_link", "dev_link")
+    if not postinstall_status and not ignore_errors:
+        try:
+            uninstall_plugin(name, plugins_base_dir, True, True)
+        except Exception:
+            pass
+        raise MFUtilPluginCantInstall("can't install plugin %s" % name,
+                                      bash_wrapper=postinstall_status)
 
 
 def develop_plugin(plugin_path, name, plugins_base_dir=None,
@@ -490,21 +541,9 @@ def develop_plugin(plugin_path, name, plugins_base_dir=None,
         MFUtilPluginCantInstall: if the plugin can't be installed.
 
     """
-    plugin_path = os.path.abspath(plugin_path)
-    plugins_base_dir = _get_plugins_base_dir(plugins_base_dir)
-    shutil.rmtree(os.path.join(plugins_base_dir, name), True)
-    try:
-        os.symlink(plugin_path, os.path.join(plugins_base_dir, name))
-    except OSError:
-        pass
-    postinstall_status = _postinstall_plugin(name, "dev_link", "dev_link")
-    if not postinstall_status and not ignore_errors:
-        try:
-            uninstall_plugin(name, plugins_base_dir, True, True)
-        except Exception:
-            pass
-        raise MFUtilPluginCantInstall("can't install plugin %s" % name,
-                                      bash_wrapper=postinstall_status)
+    return _execute_with_lock(_develop_plugin, plugin_path, name,
+                              plugins_base_dir=plugins_base_dir,
+                              ignore_errors=ignore_errors, quiet=quiet)
 
 
 def _is_dev_link_plugin(name, plugins_base_dir=None):
