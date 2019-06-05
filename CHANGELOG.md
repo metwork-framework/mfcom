@@ -28,6 +28,7 @@
 
 
 ### Bug Fixes
+- fix conf_monitor issues in random cases
 - fix some corner issues during plugins.install/uninstall
 - fix conf_monitor behaviour during plugins (un)install
 - fix bug CHANGELOGS not generated when CHANGELOGS.md doesn't exist (for the first time)
