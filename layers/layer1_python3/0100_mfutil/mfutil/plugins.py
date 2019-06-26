@@ -439,7 +439,7 @@ def _install_plugin(plugin_filepath, plugins_base_dir=None,
     postinstall_status = _postinstall_plugin(name, version, release)
     if not postinstall_status and not ignore_errors:
         try:
-            uninstall_plugin(name, plugins_base_dir, True, True)
+            _uninstall_plugin(name, plugins_base_dir, True, True)
         except Exception:
             pass
         raise MFUtilPluginCantInstall("can't install plugin %s" % name,
@@ -514,7 +514,7 @@ def _develop_plugin(plugin_path, name, plugins_base_dir=None,
     postinstall_status = _postinstall_plugin(name, "dev_link", "dev_link")
     if not postinstall_status and not ignore_errors:
         try:
-            uninstall_plugin(name, plugins_base_dir, True, True)
+            _uninstall_plugin(name, plugins_base_dir, True, True)
         except Exception:
             pass
         raise MFUtilPluginCantInstall("can't install plugin %s" % name,
