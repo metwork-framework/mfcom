@@ -41,5 +41,6 @@ void synutil_echo_clean();
 gchar *synutil_get_unique_hexa_identifier();
 void synutil_g_free(gpointer pointer);
 long synutil_get_file_size(const gchar *filepath);
+gboolean synutil_is_interactive_execution();
 
 #endif /* SYNUTIL_H_ */

@@ -1,6 +1,6 @@
 LIBS=libsynutil.so
 INCLUDES=synutil.h
-BINS=echo_clean echo_ok echo_nok echo_warning echo_running echo_bold get_unique_hexa_identifier
+BINS=echo_clean echo_ok echo_nok echo_warning echo_running echo_bold get_unique_hexa_identifier is_interactive
 
 include ../adm/root.mk
 include $(MFEXT_HOME)/share/subdir_root.mk
@@ -32,6 +32,9 @@ get_unique_hexa_identifier: get_unique_hexa_identifier.c $(OBJECTS)
 	$(CC) -o $@ $(CFLAGS) $(_INCLUDES) $(_LIBS) $^
 
 echo_clean: echo_clean.c $(OBJECTS)
+	$(CC) -o $@ $(CFLAGS) $(_INCLUDES) $(_LIBS) $^
+
+is_interactive: is_interactive.c $(OBJECTS)
 	$(CC) -o $@ $(CFLAGS) $(_INCLUDES) $(_LIBS) $^
 
 echo_warning: echo_warning.c $(OBJECTS)
