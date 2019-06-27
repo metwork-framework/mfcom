@@ -1,6 +1,19 @@
 # release_0.7 CHANGELOG
 
 
+## [Unreleased]
+
+### New Features
+- better stop ui
+- add is_interactive binary
+
+
+### Bug Fixes
+- uninstall plugin if installation failed
+
+
+
+
 
 ## v0.7.0 (2019-06-04)
 
