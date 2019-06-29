@@ -1,7 +1,8 @@
 # release_0.7 CHANGELOG
 
 
-## [Unreleased]
+
+## v0.7.1 (2019-06-27)
 
 ### New Features
 - better stop ui
