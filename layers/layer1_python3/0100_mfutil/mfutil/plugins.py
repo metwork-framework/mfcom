@@ -73,7 +73,7 @@ def layerapi2_label_to_plugin_name(label):
     return label[7:].split('@')[0]
 
 
-def get_layer_home_from_plugin_name(plugin_name):
+def get_layer_home_from_plugin_name(plugin_name, plugins_base_dir=None):
     """Get the home layer of a plugin.
 
     Args:
@@ -84,7 +84,16 @@ def get_layer_home_from_plugin_name(plugin_name):
 
     """
     label = plugin_name_to_layerapi2_label(plugin_name)
-    return LayerApi2Wrapper.get_layer_home(label)
+    pbd = _get_plugins_base_dir(plugins_base_dir)
+
+    # we temporary override the METWORK_LAYERS_PATH
+    # to avoid issues when we have the same plugin in several plugins_base_dir
+    # (during hotswap for example)
+    old_mlp = os.environ.get('METWORK_LAYERS_PATH', '')
+    os.environ['METWORK_LAYERS_PATH'] = pbd
+    res = LayerApi2Wrapper.get_layer_home(label)
+    os.environ['METWORK_LAYERS_PATH'] = old_mlp
+    return res
 
 
 def inside_a_plugin_env():
@@ -277,12 +286,18 @@ def get_installed_plugins(plugins_base_dir=None):
     for line in tmp:
         tmp2 = line.split('~~~')
         if len(tmp2) == 3:
-            home = get_layer_home_from_plugin_name(tmp2[0])
+            home = get_layer_home_from_plugin_name(
+                tmp2[0], plugins_base_dir=plugins_base_dir)
             if home:
                 result.append({'name': tmp2[0],
                                'version': tmp2[1],
                                'release': tmp2[2],
                                'home': home})
+            else:
+                result.append({'name': tmp2[0],
+                               'version': 'ERROR',
+                               'release': 'ERROR',
+                               'home': 'ERROR'})
     for tmp in os.listdir(plugins_base_dir):
         directory_name = tmp.strip()
         if directory_name == 'base':
@@ -548,7 +563,8 @@ def develop_plugin(plugin_path, name, plugins_base_dir=None,
 
 
 def _is_dev_link_plugin(name, plugins_base_dir=None):
-    home = get_layer_home_from_plugin_name(name)
+    home = get_layer_home_from_plugin_name(name,
+                                           plugins_base_dir=plugins_base_dir)
     if home is None:
         return False
     plugins_base_dir = _get_plugins_base_dir(plugins_base_dir)
@@ -666,7 +682,8 @@ def get_plugin_info(name_or_filepath, mode="auto", plugins_base_dir=None):
             res['raw_metadata_output'] = 'DEV LINK'
             res['raw_files_output'] = 'DEV LINK'
             res['files'] = []
-            res['home'] = get_layer_home_from_plugin_name(name_or_filepath)
+            res['home'] = get_layer_home_from_plugin_name(
+                name_or_filepath, plugins_base_dir=plugins_base_dir)
             return res
         cmd = _get_rpm_cmd('-qi', name_or_filepath,
                            plugins_base_dir=plugins_base_dir)
@@ -688,7 +705,8 @@ def get_plugin_info(name_or_filepath, mode="auto", plugins_base_dir=None):
         res['metadatas'][name] = value
     if mode == "name":
         res["home"] = \
-            get_layer_home_from_plugin_name(name_or_filepath)
+            get_layer_home_from_plugin_name(name_or_filepath,
+                                            plugins_base_dir=plugins_base_dir)
     if mode == "file":
         cmd = _get_rpm_cmd('-ql -p %s' % name_or_filepath,
                            plugins_base_dir=plugins_base_dir)
