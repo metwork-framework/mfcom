@@ -11,6 +11,7 @@
 
 
 ### Bug Fixes
+- fix some features when used with an alternate plugin base dir
 - uninstall plugin if installation failed
 - fix conf_monitor issues in random cases
 
