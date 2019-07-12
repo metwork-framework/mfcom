@@ -14,9 +14,15 @@ def main():
                             "full plugin filepath")
     arg_parser.add_argument("--just-home", action="store_true",
                             help="if set, just return plugin home")
+    arg_parser.add_argument("--plugins-base-dir", type=str, default=None,
+                            help="can be use to set an alternate "
+                            "plugins-base-dir, if not set the value of "
+                            "MODULE_PLUGINS_BASE_DIR env var is used (or a "
+                            "hardcoded standard value).")
     args = arg_parser.parse_args()
 
-    infos = get_plugin_info(args.name_or_filepath)
+    infos = get_plugin_info(args.name_or_filepath,
+                            plugins_base_dir=args.plugins_base_dir)
     if infos is None:
         sys.exit(1)
     if args.just_home:

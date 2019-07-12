@@ -15,6 +15,11 @@ def main():
                             help="plugin name")
     arg_parser.add_argument("--force", help="ignore some errors",
                             action="store_true")
+    arg_parser.add_argument("--plugins-base-dir", type=str, default=None,
+                            help="can be use to set an alternate "
+                            "plugins-base-dir, if not set the value of "
+                            "MODULE_PLUGINS_BASE_DIR env var is used (or a "
+                            "hardcoded standard value).")
     args = arg_parser.parse_args()
     name = args.name
     if inside_a_plugin_env():
@@ -22,7 +27,8 @@ def main():
         sys.exit(1)
     echo_running("- Uninstalling plugin %s..." % name)
     try:
-        uninstall_plugin(name, ignore_errors=args.force)
+        uninstall_plugin(name, ignore_errors=args.force,
+                         plugins_base_dir=args.plugins_base_dir)
     except MFUtilPluginNotInstalled:
         echo_nok("not installed")
         sys.exit(1)

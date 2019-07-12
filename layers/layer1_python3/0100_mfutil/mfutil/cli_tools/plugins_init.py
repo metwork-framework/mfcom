@@ -11,10 +11,15 @@ DESCRIPTION = "init the plugins base (dangerous)"
 
 def main():
     arg_parser = argparse.ArgumentParser(description=DESCRIPTION)
-    arg_parser.parse_args()
+    arg_parser.add_argument("--plugins-base-dir", type=str, default=None,
+                            help="can be use to set an alternate "
+                            "plugins-base-dir, if not set the value of "
+                            "MODULE_PLUGINS_BASE_DIR env var is used (or a "
+                            "hardcoded standard value).")
+    args = arg_parser.parse_args()
     echo_running("- Creating plugins base...")
     try:
-        init_plugins_base()
+        init_plugins_base(args.plugins_base_dir)
     except MFUtilPluginCantInit as e:
         echo_nok()
         print(e)
