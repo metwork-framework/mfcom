@@ -20,9 +20,8 @@ fi
 
 PLUGIN_HOME=$(plugins.info --just-home "${NAME}" || true)
 if test "${PLUGIN_HOME}" = ""; then
-    # maybe this is a devlink
-    # let's hardcode this
-    PLUGIN_HOME="${MODULE_RUNTIME_HOME}/var/plugins/${NAME}"
+    echo "ERROR: can't find plugin_home for ${NAME}"
+    exit 1
 fi
 
 if ! test -f "${PLUGIN_HOME}/.layerapi2_dependencies"; then

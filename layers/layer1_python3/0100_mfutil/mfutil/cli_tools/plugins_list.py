@@ -14,11 +14,16 @@ def main():
     arg_parser.add_argument("--raw", action="store_true", help="raw mode")
     arg_parser.add_argument("--json", action="store_true", help="json mode "
                             "(not compatible with raw mode)")
+    arg_parser.add_argument("--plugins-base-dir", type=str, default=None,
+                            help="can be use to set an alternate "
+                            "plugins-base-dir, if not set the value of "
+                            "MODULE_PLUGINS_BASE_DIR env var is used (or a "
+                            "hardcoded standard value).")
     args = arg_parser.parse_args()
     if args.json and args.raw:
         print("ERROR: json and raw options are mutually exclusives")
         sys.exit(1)
-    plugins = get_installed_plugins()
+    plugins = get_installed_plugins(plugins_base_dir=args.plugins_base_dir)
     json_output = []
     table_data = []
     table_data.append(["Name", "Version", "Release", "Home"])

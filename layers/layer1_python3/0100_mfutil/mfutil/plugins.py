@@ -84,16 +84,31 @@ def get_layer_home_from_plugin_name(plugin_name, plugins_base_dir=None):
 
     """
     label = plugin_name_to_layerapi2_label(plugin_name)
-    pbd = _get_plugins_base_dir(plugins_base_dir)
-
     # we temporary override the METWORK_LAYERS_PATH
-    # to avoid issues when we have the same plugin in several plugins_base_dir
-    # (during hotswap for example)
+    # to avoid issues when we have the same plugin in several
+    # plugins_base_dirs (during hotswap for example)
     old_mlp = os.environ.get('METWORK_LAYERS_PATH', '')
-    os.environ['METWORK_LAYERS_PATH'] = pbd
+    pbd = _get_plugins_base_dir(plugins_base_dir)
+    os.environ['METWORK_LAYERS_PATH'] = pbd + ":" + old_mlp
     res = LayerApi2Wrapper.get_layer_home(label)
     os.environ['METWORK_LAYERS_PATH'] = old_mlp
     return res
+
+
+class PluginsBaseDir(object):
+
+    def __init__(self, plugins_base_dir=None):
+        self.pbd = _get_plugins_base_dir(plugins_base_dir)
+        self.old_value = os.environ.get('MODULE_PLUGINS_BASE_DIR', None)
+
+    def __enter__(self):
+        os.environ['MODULE_PLUGINS_BASE_DIR'] = self.pbd
+
+    def __exit__(self, *args, **kwargs):
+        if self.old_value is None:
+            del(os.environ['MODULE_PLUGINS_BASE_DIR'])
+        else:
+            os.environ['MODULE_PLUGINS_BASE_DIR'] = self.old_value
 
 
 def inside_a_plugin_env():
@@ -186,20 +201,22 @@ def __get_logger():
 def get_plugins_base_dir():
     """Return the default plugins base directory path.
 
-    This value correspond to: ${RUNTIME_HOME}/var/plugins value.
+    This value correspond to the content of MODULE_PLUGINS_BASE_DIR env var
+    or ${RUNTIME_HOME}/var/plugins (if not set).
 
     Returns:
         (string): the default plugins base directory path.
 
     """
+    if "MODULE_PLUGINS_BASE_DIR" in os.environ:
+        return os.environ.get("MODULE_PLUGINS_BASE_DIR")
     return os.path.join(RUNTIME_HOME, "var", "plugins")
 
 
 def _get_plugins_base_dir(plugins_base_dir=None):
-    if plugins_base_dir is None:
-        return get_plugins_base_dir()
-    else:
+    if plugins_base_dir is not None:
         return plugins_base_dir
+    return get_plugins_base_dir()
 
 
 def _get_rpm_cmd(command, extra_args="", plugins_base_dir=None,
@@ -330,14 +347,18 @@ def _uninstall_plugin(name, plugins_base_dir=None,
     release = infos['metadatas']['release']
     home = infos.get('home', None)
     if release == 'dev_link':
-        preuninstall_status = _preuninstall_plugin(name, version, release,
-                                                   quiet=quiet)
+        preuninstall_status = \
+            _preuninstall_plugin(name, version, release,
+                                 quiet=quiet,
+                                 plugins_base_dir=plugins_base_dir)
         if not preuninstall_status and not ignore_errors:
             raise MFUtilPluginCantUninstall("can't uninstall plugin %s" % name)
         if home:
             os.unlink(home)
         return
-    preuninstall_status = _preuninstall_plugin(name, version, release)
+    preuninstall_status = \
+        _preuninstall_plugin(name, version, release,
+                             plugins_base_dir=plugins_base_dir)
     if not preuninstall_status and not ignore_errors:
         raise MFUtilPluginCantUninstall("can't uninstall plugin %s" % name)
     cmd = _get_rpm_cmd('-e --noscripts %s' % name,
@@ -384,12 +405,13 @@ def uninstall_plugin(name, plugins_base_dir=None,
                               ignore_errors=ignore_errors, quiet=quiet)
 
 
-def _postinstall_plugin(name, version, release):
-    return BashWrapper("_plugins.postinstall %s %s %s" %
-                       (name, version, release))
+def _postinstall_plugin(name, version, release, plugins_base_dir=None):
+    with PluginsBaseDir(plugins_base_dir):
+        return BashWrapper("_plugins.postinstall %s %s %s" %
+                           (name, version, release))
 
 
-def is_dangerous_plugin(name):
+def is_dangerous_plugin(name, plugins_base_dir=None):
     """Display is_dangerous_plugin command.
 
     Display on the standard output (stdout) the result of the
@@ -400,24 +422,29 @@ def is_dangerous_plugin(name):
 
     Args:
         name: name of the plugin.
+        plugins_base_dir (string): (optional) the plugin base directory path.
+            If not set, the default plugins base directory path is used.
 
     """
-    res = BashWrapper("_plugins.is_dangerous %s" % (name,))
-    if not res:
-        __get_logger().warning("error during %s", res)
-        return
-    if res.stdout and len(res.stdout) > 0:
-        print(res.stdout)
+    with PluginsBaseDir(plugins_base_dir):
+        res = BashWrapper("_plugins.is_dangerous %s" % (name,))
+        if not res:
+            __get_logger().warning("error during %s", res)
+            return
+        if res.stdout and len(res.stdout) > 0:
+            print(res.stdout)
 
 
-def _preuninstall_plugin(name, version, release, quiet=False):
-    res = BashWrapper("_plugins.preuninstall %s %s %s" %
-                      (name, version, release))
-    if not res:
-        if not quiet:
-            __get_logger().warning("error during postuninstall: %s", res)
-        return False
-    return True
+def _preuninstall_plugin(name, version, release, quiet=False,
+                         plugins_base_dir=None):
+    with PluginsBaseDir(plugins_base_dir):
+        res = BashWrapper("_plugins.preuninstall %s %s %s" %
+                          (name, version, release))
+        if not res:
+            if not quiet:
+                __get_logger().warning("error during postuninstall: %s", res)
+            return False
+        return True
 
 
 def get_plugin_lock_path():
@@ -451,7 +478,8 @@ def _install_plugin(plugin_filepath, plugins_base_dir=None,
     if infos is None:
         raise MFUtilPluginCantInstall("can't install plugin %s" % name,
                                       bash_wrapper=x)
-    postinstall_status = _postinstall_plugin(name, version, release)
+    postinstall_status = _postinstall_plugin(name, version, release,
+                                             plugins_base_dir=plugins_base_dir)
     if not postinstall_status and not ignore_errors:
         try:
             _uninstall_plugin(name, plugins_base_dir, True, True)
@@ -527,7 +555,8 @@ def _develop_plugin(plugin_path, name, plugins_base_dir=None,
         os.symlink(plugin_path, os.path.join(plugins_base_dir, name))
     except OSError:
         pass
-    postinstall_status = _postinstall_plugin(name, "dev_link", "dev_link")
+    postinstall_status = _postinstall_plugin(name, "dev_link", "dev_link",
+                                             plugins_base_dir=plugins_base_dir)
     if not postinstall_status and not ignore_errors:
         try:
             _uninstall_plugin(name, plugins_base_dir, True, True)
