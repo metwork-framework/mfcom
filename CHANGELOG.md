@@ -4,6 +4,7 @@
 ## [Unreleased]
 
 ### New Features
+- introduce options to work with alternate plugins_base_dir
 - better stop ui
 - add is_interactive binary
 - use envtpl new option --reduce-multi-blank-lines
