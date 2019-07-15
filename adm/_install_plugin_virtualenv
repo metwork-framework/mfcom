@@ -20,13 +20,15 @@ fi
 
 PLUGIN_HOME=$(plugins.info --just-home "${NAME}" || true)
 if test "${PLUGIN_HOME}" = ""; then
-    echo "ERROR: can't find plugin_home for ${NAME}"
-    exit 1
+    # we try pwd (the plugin is maybe not installed for the moment)
+    # example: during a make develop, we build the virtualenv before the
+    # installation
+    PLUGIN_HOME=$(pwd)
 fi
 
 if ! test -f "${PLUGIN_HOME}/.layerapi2_dependencies"; then
-    # on essaye pwd (le plugin est peut etre pas encore installe)
-    PLUGIN_HOME=$(pwd)
+    echo "${PLUGIN_HOME} is not a valid plugin home"
+    exit 1
 fi
 if ! test -f "${PLUGIN_HOME}/.layerapi2_dependencies"; then
     echo "${PLUGIN_HOME} is not a valid plugin home"
