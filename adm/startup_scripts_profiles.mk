@@ -20,6 +20,6 @@ $(PREFIX)/bin/$(MODULE_LOWERCASE).init: $(MFEXT_HOME)/share/templates/mfxxx.init
 
 $(PREFIX)/bin/cronwrap.sh: $(MFEXT_HOME)/share/templates/cronwrap.sh
 	$(MFEXT_HOME)/bin/_make_file_from_template.sh cronwrap.sh >$@
-	chmod u+rx $@
+	chmod +x $@
 
 all:: profiles $(PREFIX)/bin/cronwrap.sh $(PREFIX)/bin/$(MODULE_LOWERCASE).status $(PREFIX)/bin/$(MODULE_LOWERCASE).start $(PREFIX)/bin/$(MODULE_LOWERCASE).stop $(PREFIX)/bin/$(MODULE_LOWERCASE).autorestart $(PREFIX)/bin/$(MODULE_LOWERCASE).init load_env
