@@ -8,8 +8,9 @@ all:: directories
 	cd adm && $(MAKE)
 	cd config && $(MAKE)
 	cd synutil_c && $(MAKE)
-	cd layers && $(MAKE)
 	cd synutil_lua && $(MAKE)
+	_layer_dhash root@mfcom >$(MFCOM_HOME)/.dhash
+	cd layers && $(MAKE)
 
 clean::
 	cd synutil_lua && $(MAKE) clean
