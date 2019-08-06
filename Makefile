@@ -7,14 +7,10 @@ MODULE_LOWERCASE=mfcom
 all:: directories
 	cd adm && $(MAKE)
 	cd config && $(MAKE)
-	cd synutil_c && $(MAKE)
-	cd synutil_lua && $(MAKE)
 	_layer_dhash root@mfcom >$(MFCOM_HOME)/.dhash
 	cd layers && $(MAKE)
 
 clean::
-	cd synutil_lua && $(MAKE) clean
-	cd synutil_c && $(MAKE) clean
 	cd config && $(MAKE) clean
 	cd adm && $(MAKE) clean
 	cd layers && $(MAKE) clean

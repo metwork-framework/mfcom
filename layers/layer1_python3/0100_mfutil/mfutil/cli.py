@@ -5,27 +5,27 @@ import six
 import sys
 import ctypes
 
-SYNUTIL_INSTANCE = None
+MFUTIL_INSTANCE = None
 
 
-def _get_synutil():
-    global SYNUTIL_INSTANCE
-    if SYNUTIL_INSTANCE is None:
-        i = ctypes.cdll.LoadLibrary("libsynutil.so")
-        i.synutil_echo_ok.restype = None
-        i.synutil_echo_ok.argtypes = [ctypes.c_char_p]
-        i.synutil_echo_nok.restype = None
-        i.synutil_echo_nok.argtypes = [ctypes.c_char_p]
-        i.synutil_echo_warning.restype = None
-        i.synutil_echo_warning.argtypes = [ctypes.c_char_p]
-        i.synutil_echo_bold.restype = None
-        i.synutil_echo_bold.argtypes = [ctypes.c_char_p]
-        i.synutil_echo_running.restype = None
-        i.synutil_echo_running.argtypes = []
-        i.synutil_echo_clean.restype = None
-        i.synutil_echo_clean.argtypes = []
-        SYNUTIL_INSTANCE = i
-    return SYNUTIL_INSTANCE
+def _get_mfutil():
+    global MFUTIL_INSTANCE
+    if MFUTIL_INSTANCE is None:
+        i = ctypes.cdll.LoadLibrary("libmfutil.so")
+        i.mfutil_echo_ok.restype = None
+        i.mfutil_echo_ok.argtypes = [ctypes.c_char_p]
+        i.mfutil_echo_nok.restype = None
+        i.mfutil_echo_nok.argtypes = [ctypes.c_char_p]
+        i.mfutil_echo_warning.restype = None
+        i.mfutil_echo_warning.argtypes = [ctypes.c_char_p]
+        i.mfutil_echo_bold.restype = None
+        i.mfutil_echo_bold.argtypes = [ctypes.c_char_p]
+        i.mfutil_echo_running.restype = None
+        i.mfutil_echo_running.argtypes = []
+        i.mfutil_echo_clean.restype = None
+        i.mfutil_echo_clean.argtypes = []
+        MFUTIL_INSTANCE = i
+    return MFUTIL_INSTANCE
 
 
 def echo_ok(message=""):
@@ -35,7 +35,7 @@ def echo_ok(message=""):
         message (string): little optional message.
 
     """
-    _get_synutil().synutil_echo_ok(message.encode('utf8'))
+    _get_mfutil().mfutil_echo_ok(message.encode('utf8'))
 
 
 def echo_nok(message=""):
@@ -45,7 +45,7 @@ def echo_nok(message=""):
         message (string): little optional message.
 
     """
-    _get_synutil().synutil_echo_nok(message.encode('utf8'))
+    _get_mfutil().mfutil_echo_nok(message.encode('utf8'))
 
 
 def echo_warning(message=""):
@@ -55,7 +55,7 @@ def echo_warning(message=""):
         message (string): little optional message.
 
     """
-    _get_synutil().synutil_echo_warning(message.encode('utf8'))
+    _get_mfutil().mfutil_echo_warning(message.encode('utf8'))
 
 
 def echo_bold(message):
@@ -65,7 +65,7 @@ def echo_bold(message):
         message (string): message to write in bold.
 
     """
-    _get_synutil().synutil_echo_bold(message.encode('utf8'))
+    _get_mfutil().mfutil_echo_bold(message.encode('utf8'))
 
 
 def echo_running(message=None):
@@ -79,16 +79,16 @@ def echo_running(message=None):
 
     """
     if message is None:
-        _get_synutil().synutil_echo_running()
+        _get_mfutil().mfutil_echo_running()
     else:
         if six.PY2:
             print(message, end="")
             sys.stdout.flush()
         else:
             print(message, end="", flush=True)
-        _get_synutil().synutil_echo_running()
+        _get_mfutil().mfutil_echo_running()
 
 
 def echo_clean():
     """Clean waiting status."""
-    _get_synutil().synutil_echo_clean()
+    _get_mfutil().mfutil_echo_clean()
