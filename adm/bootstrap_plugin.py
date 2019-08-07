@@ -51,7 +51,7 @@ if args.subcommand not in ("list", "create"):
     parser.exit(status=0)
 
 if args.subcommand == 'list':
-    print("List of availabel plugin templates:")
+    print("List of available plugin templates:")
     for plugin in os.listdir(PLUGIN_TEMPLATES_PATH):
         if plugin.startswith('_'):
             continue
