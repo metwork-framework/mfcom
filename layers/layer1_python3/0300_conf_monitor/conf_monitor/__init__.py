@@ -28,13 +28,13 @@ def init_signals():
     signal.signal(signal.SIGTERM, handler_stop_signals)
 
 
-def is_status_running():
+def is_status_running_or_error():
     try:
         with open("%s/var/status" % MODULE_RUNTIME_HOME, 'r') as f:
             status = f.read().strip()
     except Exception:
         status = "unknown"
-    return ("RUNNING" in status)
+    return ("RUNNING" in status) or (status == "ERROR")
 
 
 def _get_plugins_home():
@@ -192,8 +192,9 @@ class ConfMonitorRunner(object):
                                "maybe a blocked plugins.install/uninstall ? "
                                "=> exiting")
                 break
-            if not is_status_running():
-                LOGGER.info("The module is not RUNNING => ignoring...")
+            if not is_status_running_or_error():
+                LOGGER.info("The module is not RUNNING or ERROR => "
+                            "ignoring...")
                 time.sleep(2)
                 force = True
                 continue
