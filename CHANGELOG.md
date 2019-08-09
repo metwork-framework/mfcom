@@ -4,6 +4,7 @@
 ## [Unreleased]
 
 ### New Features
+- better conf_monitor handling
 - move synutil_c and synutil_lua to mfext
 - introduce options to work with alternate plugins_base_dir
 - better stop ui
