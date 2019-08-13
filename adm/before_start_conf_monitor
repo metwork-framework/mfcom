@@ -1,0 +1,3 @@
+#!/bin/bash
+
+touch "${MODULE_RUNTIME_HOME}/var/conf_monitor"
