@@ -1,24 +1,4 @@
 # CHANGELOG
 
 
-## [Unreleased]
-
-### New Features
-- better conf_monitor handling
-- move synutil_c and synutil_lua to mfext
-- introduce options to work with alternate plugins_base_dir
-- better stop ui
-- add is_interactive binary
-- use envtpl new option --reduce-multi-blank-lines
-- jsonlog2elasticsearch is classified as monitoring process
-
-
-### Bug Fixes
-- fix some features when used with an alternate plugin base dir
-- uninstall plugin if installation failed
-- fix conf_monitor issues in random cases
-
-
-
-
 
