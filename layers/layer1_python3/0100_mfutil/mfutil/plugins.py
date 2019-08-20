@@ -84,14 +84,14 @@ def get_layer_home_from_plugin_name(plugin_name, plugins_base_dir=None):
 
     """
     label = plugin_name_to_layerapi2_label(plugin_name)
-    # we temporary override the METWORK_LAYERS_PATH
+    # we temporary override the LAYERAPI2_LAYERS_PATH
     # to avoid issues when we have the same plugin in several
     # plugins_base_dirs (during hotswap for example)
-    old_mlp = os.environ.get('METWORK_LAYERS_PATH', '')
+    old_mlp = os.environ.get('LAYERAPI2_LAYERS_PATH', '')
     pbd = _get_plugins_base_dir(plugins_base_dir)
-    os.environ['METWORK_LAYERS_PATH'] = pbd + ":" + old_mlp
+    os.environ['LAYERAPI2_LAYERS_PATH'] = pbd + ":" + old_mlp
     res = LayerApi2Wrapper.get_layer_home(label)
-    os.environ['METWORK_LAYERS_PATH'] = old_mlp
+    os.environ['LAYERAPI2_LAYERS_PATH'] = old_mlp
     return res
 
 

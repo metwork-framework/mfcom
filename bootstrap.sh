@@ -76,7 +76,7 @@ touch adm/root.mk
 ROOT_PATH=${MFCOM_HOME}/bin:${MFEXT_HOME}/bin:${PATH:-}
 ROOT_LD_LIBRARY_PATH=${MFCOM_HOME}/lib:${MFEXT_HOME}/lib
 ROOT_PKG_CONFIG_PATH=${MFCOM_HOME}/lib/pkgconfig:${MFEXT_HOME}/lib/pkgconfig
-ROOT_METWORK_LAYERS_PATH=${MFCOM_HOME}/opt:${MFCOM_HOME}:${MFEXT_HOME}/opt:${MFEXT_HOME}
+ROOT_LAYERAPI2_LAYERS_PATH=${MFCOM_HOME}/opt:${MFCOM_HOME}:${MFEXT_HOME}/opt:${MFEXT_HOME}
 
 
 echo "Making adm/root.mk..."
@@ -85,7 +85,7 @@ touch adm/root.mk
 
 echo "export MODULE := ${MODULE}" >>adm/root.mk
 echo "export MODULE_LOWERCASE := $(echo ${MODULE} | tr '[:upper:]' '[:lower:]')" >>adm/root.mk
-echo "export METWORK_LAYERS_PATH := ${ROOT_METWORK_LAYERS_PATH}" >>adm/root.mk
+echo "export LAYERAPI2_LAYERS_PATH := ${ROOT_LAYERAPI2_LAYERS_PATH}" >>adm/root.mk
 echo "export MFEXT_HOME := ${MFEXT_HOME}" >>adm/root.mk
 echo "export MFEXT_VERSION := ${MFEXT_VERSION}" >>adm/root.mk
 echo "export MODULE_HOME := ${MODULE_HOME}" >>adm/root.mk
@@ -95,7 +95,7 @@ echo "ifeq (\$(FORCED_PATHS),)" >>adm/root.mk
 echo "  export PATH := ${ROOT_PATH}" >>adm/root.mk
 echo "  export LD_LIBRARY_PATH := ${ROOT_LD_LIBRARY_PATH}" >>adm/root.mk
 echo "  export PKG_CONFIG_PATH := ${ROOT_PKG_CONFIG_PATH}/lib/pkgconfig" >>adm/root.mk
-echo "  LAYER_ENVS:=\$(shell env |grep '^METWORK_LAYER_.*_LOADED=1\$\$' |awk -F '=' '{print \$\$1;}')" >>adm/root.mk
+echo "  LAYER_ENVS:=\$(shell env |grep '^LAYERAPI2_LAYER_.*_LOADED=1\$\$' |awk -F '=' '{print \$\$1;}')" >>adm/root.mk
 echo "  \$(foreach LAYER_ENV, \$(LAYER_ENVS), \$(eval unexport \$(LAYER_ENV)))" >>adm/root.mk
 echo "endif" >>adm/root.mk
 

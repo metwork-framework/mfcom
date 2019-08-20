@@ -93,7 +93,7 @@ python2_virtualenv_sources/src: $(REQUIREMENTS2)
 
 package-lock.json: package.json
 	rm -f $@
-	export METWORK_LAYERS_PATH=`pwd`:$(METWORK_LAYERS_PATH) ; plugin_wrapper $(NAME) -- npm install
+	export LAYERAPI2_LAYERS_PATH=`pwd`:$(LAYERAPI2_LAYERS_PATH) ; plugin_wrapper $(NAME) -- npm install
 
 release: clean $(PREREQ) custom
 	layer_wrapper --empty --layers=$(LAYERS),python3@mfcom -- _plugins.make --show-plugin-path

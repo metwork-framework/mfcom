@@ -41,7 +41,7 @@ args = parser.parse_args()
 plugin = args.PLUGIN_NAME
 layer_name = "plugin_%s@%s" % (plugin, MODULE_LOWERCASE)
 
-# we check that the plugins base dir is included in METWORK_LAYERS_PATH
+# we check that the plugins base dir is included in LAYERAPI2_LAYERS_PATH
 # (useful for custom plugins base dir during hotswapping for example)
 if args.plugins_base_dir is not None:
     plugins_base_dir = args.plugins_base_dir
@@ -49,9 +49,9 @@ else:
     plugins_base_dir = os.environ.get('MODULE_PLUGINS_BASE_DIR', None)
 if plugins_base_dir is not None:
     if plugins_base_dir not in \
-            os.environ.get('METWORK_LAYERS_PATH', '').split(':'):
-        os.environ['METWORK_LAYERS_PATH'] = plugins_base_dir + ':' + \
-            os.environ['METWORK_LAYERS_PATH']
+            os.environ.get('LAYERAPI2_LAYERS_PATH', '').split(':'):
+        os.environ['LAYERAPI2_LAYERS_PATH'] = plugins_base_dir + ':' + \
+            os.environ['LAYERAPI2_LAYERS_PATH']
 
 layer_dir = LayerApi2Wrapper.get_layer_home(layer_name)
 if layer_dir is None:
