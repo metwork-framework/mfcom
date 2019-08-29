@@ -3,7 +3,7 @@
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
-SPHINXBUILD   = $(MFEXT_HOME)/bin/sphinx_wrapper
+SPHINXBUILD   = $(MFEXT_HOME)/opt/devtools/bin/sphinx_wrapper
 SPHINXPROJ    = mfcom
 SOURCEDIR     = .
 BUILDDIR      = _build
