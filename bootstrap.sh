@@ -6,35 +6,27 @@ function get_abs_filename() {
     echo "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
 }
 
-if test "${METWORK_PROFILE_LOADED:-0}" = "1"; then
-    echo "ERROR: metwork environnement is already loaded"
-    echo "=> use a terminal without metwork environnement loaded"
-    echo "   to launch this script"
+function usage() {
+    echo "usage: ./bootstrap.sh INSTALL_PREFIX_DIRECTORY MFEXT_INSTALL_ROOT_DIRECTORY"
+}
+if test "${1:-}" = "" -o "${2:-}" = ""; then
+    usage
     exit 1
 fi
-
-
-    function usage() {
-        echo "usage: ./bootstrap.sh INSTALL_PREFIX_DIRECTORY MFEXT_INSTALL_ROOT_DIRECTORY"
-    }
-    if test "${1:-}" = "" -o "${2:-}" = ""; then
-        usage
-        exit 1
-    fi
-    MFEXT_HOME=$(get_abs_filename "$2")
-    export MFEXT_HOME
-    if ! test -d "${MFEXT_HOME}"; then
-        usage
-        echo "ERROR: ${MFEXT_HOME} is not a directory"
-        exit 1
-    fi
-    MFCOM_HOME=$(get_abs_filename "$1")
-    export MFCOM_HOME
-    MFCOM_VERSION=$("${MFEXT_HOME}/bin/guess_version.sh")
-    export MFCOM_VERSION
-    MFEXT_VERSION=$(cat "${MFEXT_HOME}/config/version")
-    export MFEXT_VERSION
-    export MODULE_VERSION=${MFCOM_VERSION}
+MFEXT_HOME=$(get_abs_filename "$2")
+export MFEXT_HOME
+if ! test -d "${MFEXT_HOME}"; then
+    usage
+    echo "ERROR: ${MFEXT_HOME} is not a directory"
+    exit 1
+fi
+MFCOM_HOME=$(get_abs_filename "$1")
+export MFCOM_HOME
+MFCOM_VERSION=$("${MFEXT_HOME}/bin/guess_version.sh")
+export MFCOM_VERSION
+MFEXT_VERSION=$(cat "${MFEXT_HOME}/config/version")
+export MFEXT_VERSION
+export MODULE_VERSION=${MFCOM_VERSION}
 
 
 if test "${1:-}" = "--help"; then
@@ -66,16 +58,16 @@ export MODULE_LOWERCASE=mfcom
 SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export SRC_DIR
 
-    
+
 
 
 rm -f adm/root.mk
 touch adm/root.mk
 
 
-ROOT_PATH=${MFCOM_HOME}/bin:${MFEXT_HOME}/bin:${PATH:-}
-ROOT_LD_LIBRARY_PATH=${MFCOM_HOME}/lib:${MFEXT_HOME}/lib
-ROOT_PKG_CONFIG_PATH=${MFCOM_HOME}/lib/pkgconfig:${MFEXT_HOME}/lib/pkgconfig
+ROOT_PATH=${MFCOM_HOME}/bin:${MFEXT_HOME}/bin:${MFEXT_HOME}/opt/core/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ROOT_LD_LIBRARY_PATH=""
+ROOT_PKG_CONFIG_PATH=""
 ROOT_LAYERAPI2_LAYERS_PATH=${MFCOM_HOME}/opt:${MFCOM_HOME}:${MFEXT_HOME}/opt:${MFEXT_HOME}
 
 
@@ -94,14 +86,14 @@ echo "export SRC_DIR := ${SRC_DIR}" >>adm/root.mk
 echo "ifeq (\$(FORCED_PATHS),)" >>adm/root.mk
 echo "  export PATH := ${ROOT_PATH}" >>adm/root.mk
 echo "  export LD_LIBRARY_PATH := ${ROOT_LD_LIBRARY_PATH}" >>adm/root.mk
-echo "  export PKG_CONFIG_PATH := ${ROOT_PKG_CONFIG_PATH}/lib/pkgconfig" >>adm/root.mk
+echo "  export PKG_CONFIG_PATH := ${ROOT_PKG_CONFIG_PATH}" >>adm/root.mk
 echo "  LAYER_ENVS:=\$(shell env |grep '^LAYERAPI2_LAYER_.*_LOADED=1\$\$' |awk -F '=' '{print \$\$1;}')" >>adm/root.mk
 echo "  \$(foreach LAYER_ENV, \$(LAYER_ENVS), \$(eval unexport \$(LAYER_ENV)))" >>adm/root.mk
 echo "endif" >>adm/root.mk
 
         echo "export MFCOM_HOME := ${MFCOM_HOME}" >>adm/root.mk
         echo "export MFCOM_VERSION := ${MFCOM_VERSION}" >>adm/root.mk
-        
+
     if test "${MODULE_HAS_HOME_DIR:-}" = "1"; then
     echo "export MODULE_HAS_HOME_DIR := 1" >>adm/root.mk
     fi
