@@ -22,3 +22,7 @@ doc/mfcom_intro.rst
 doc/CHANGELOG*.md
 doc/CHANGELOG*.rst
 doc/changelogs.rst
+installation_guide.md
+installation_guide.rst
+doc/README.md
+doc/README.rst
