@@ -6,9 +6,9 @@ import requests
 import argparse
 from mflog import getLogger
 
-MODULE = os.environ['MODULE']
-MODULE_RUNTIME_HOME = os.environ.get('MODULE_RUNTIME_HOME', 'unknown')
-NGINX_PORT_ENV = "%s_NGINX_PORT" % MODULE
+MFMODULE = os.environ['MFMODULE']
+MFMODULE_RUNTIME_HOME = os.environ.get('MFMODULE_RUNTIME_HOME', 'unknown')
+NGINX_PORT_ENV = "%s_NGINX_PORT" % MFMODULE
 NGINX_PORT = int(os.environ[NGINX_PORT_ENV])
 UUID_URL = "http://127.0.0.1:%i/uuid" % NGINX_PORT
 
@@ -17,7 +17,7 @@ parser = argparse.ArgumentParser(description="test nginx with a special uuid "
 parser.parse_args()
 logger = getLogger("nginx.status")
 
-if MODULE in ("MFCOM", "MFEXT"):
+if MFMODULE in ("MFCOM", "MFEXT"):
     logger.warning("this script can't work on this module")
     sys.exit(1)
 
@@ -34,7 +34,7 @@ except Exception:
     sys.exit(1)
 
 try:
-    with open("%s/var/uuid" % MODULE_RUNTIME_HOME, 'r') as f:
+    with open("%s/var/uuid" % MFMODULE_RUNTIME_HOME, 'r') as f:
         file_uuid = f.read().strip()
 except Exception:
     logger.warning("can't read file uuid")

@@ -12,9 +12,9 @@ import sys
 from bash import bash
 
 
-MODULE = os.environ['MODULE']
-MODULE_HOME = os.environ['MODULE_HOME']
-PLUGIN_TEMPLATES_PATH = "%s/share/templates/plugins/" % MODULE_HOME
+MFMODULE = os.environ['MFMODULE']
+MFMODULE_HOME = os.environ['MFMODULE_HOME']
+PLUGIN_TEMPLATES_PATH = "%s/share/templates/plugins/" % MFMODULE_HOME
 
 
 parser = argparse.ArgumentParser()
@@ -83,7 +83,7 @@ if not os.path.isdir(res):
     print("ERROR : cookiecutter result is not a valid directory")
     parser.exit(1)
 
-if MODULE == "MFDATA":
+if MFMODULE == "MFDATA":
     # FIXME: why chmod +x *.py ???
     get_bash_output_or_die("cd %s && chmod +x *.py && "
                            "remove_empty.sh" % args.plugin)

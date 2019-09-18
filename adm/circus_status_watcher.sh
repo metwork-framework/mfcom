@@ -6,7 +6,7 @@ if test "$2" != ""; then
 else
     TITLE=$1
 fi
-ENDPOINT=$(env |grep "^${MODULE}_CIRCUS_ENDPOINT" |awk -F '=' '{print $2;}')
+ENDPOINT=$(env |grep "^${MFMODULE}_CIRCUS_ENDPOINT" |awk -F '=' '{print $2;}')
 
 echo -n "- Checking ${TITLE}..."
 echo_running

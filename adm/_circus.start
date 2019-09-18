@@ -3,24 +3,24 @@
 . ${MFEXT_HOME}/lib/bash_utils.sh
 exit_if_root
 
-if test "${MODULE}" = ""; then
-  echo "ERROR: MODULE env var is empty"
+if test "${MFMODULE}" = ""; then
+  echo "ERROR: MFMODULE env var is empty"
   exit 1
 fi
 
-if ! test -s "${MODULE_RUNTIME_HOME}/var/uuid"; then
-    get_unique_hexa_identifier >"${MODULE_RUNTIME_HOME}/var/uuid"
+if ! test -s "${MFMODULE_RUNTIME_HOME}/var/uuid"; then
+    get_unique_hexa_identifier >"${MFMODULE_RUNTIME_HOME}/var/uuid"
 fi
 
 echo -n "- Generating circus.ini"
 echo_running
-_make_circus_conf >${MODULE_RUNTIME_HOME}/tmp/config_auto/circus.ini
-if test -s ${MODULE_RUNTIME_HOME}/tmp/config_auto/circus.ini; then
+_make_circus_conf >${MFMODULE_RUNTIME_HOME}/tmp/config_auto/circus.ini
+if test -s ${MFMODULE_RUNTIME_HOME}/tmp/config_auto/circus.ini; then
     echo_ok
 else
     echo_nok
 fi
-CONFIG_FILE=${MODULE_RUNTIME_HOME}/tmp/config_auto/circus.ini
+CONFIG_FILE=${MFMODULE_RUNTIME_HOME}/tmp/config_auto/circus.ini
 
 # Lancement du daemon
 echo -n "- Starting circus..."
@@ -34,11 +34,11 @@ if test ${?} -eq 0; then
   exit 0
 fi
 
-echo "*****************************************************************************" >> ${MODULE_RUNTIME_HOME}/log/circus.log
-echo "`date` : STARTING circus" >> ${MODULE_RUNTIME_HOME}/log/circus.log
-echo "*****************************************************************************" >> ${MODULE_RUNTIME_HOME}/log/circus.log
-export METWORK_LIST_PROCESSES_FORCE="${MODULE}"
-start_daemon "layer_wrapper --layers=python3_circus@mfext -- circusd ${CONFIG_FILE}" ${MODULE_RUNTIME_HOME}/log/circus.log ${MODULE_RUNTIME_HOME}/log/circus.log
+echo "*****************************************************************************" >> ${MFMODULE_RUNTIME_HOME}/log/circus.log
+echo "`date` : STARTING circus" >> ${MFMODULE_RUNTIME_HOME}/log/circus.log
+echo "*****************************************************************************" >> ${MFMODULE_RUNTIME_HOME}/log/circus.log
+export METWORK_LIST_PROCESSES_FORCE="${MFMODULE}"
+start_daemon "layer_wrapper --layers=python3_circus@mfext -- circusd ${CONFIG_FILE}" ${MFMODULE_RUNTIME_HOME}/log/circus.log ${MFMODULE_RUNTIME_HOME}/log/circus.log
 echo_ok
 
 exit 0

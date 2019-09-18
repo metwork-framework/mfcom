@@ -7,8 +7,8 @@ import argparse
 from mfutil.layerapi2 import LayerApi2Wrapper
 
 DESCRIPTION = "execute a command in a plugin environment"
-MODULE = os.environ["MODULE"]
-MODULE_LOWERCASE = os.environ["MODULE_LOWERCASE"]
+MFMODULE = os.environ["MFMODULE"]
+MFMODULE_LOWERCASE = os.environ["MFMODULE_LOWERCASE"]
 
 
 parser = argparse.ArgumentParser(description=DESCRIPTION)
@@ -31,7 +31,7 @@ parser.add_argument("--add-extra-dir-to-node-path", default=None, type=str,
 parser.add_argument("--plugins-base-dir", type=str, default=None,
                     help="can be use to set an alternate "
                     "plugins-base-dir, if not set the value of "
-                    "MODULE_PLUGINS_BASE_DIR env var is used (or a "
+                    "MFMODULE_PLUGINS_BASE_DIR env var is used (or a "
                     "hardcoded standard value).")
 parser.add_argument("PLUGIN_NAME", type=str,
                     help="plugin name")
@@ -39,14 +39,14 @@ parser.add_argument("COMMAND_AND_ARGS", nargs='+',
                     help="command (and args )to execute")
 args = parser.parse_args()
 plugin = args.PLUGIN_NAME
-layer_name = "plugin_%s@%s" % (plugin, MODULE_LOWERCASE)
+layer_name = "plugin_%s@%s" % (plugin, MFMODULE_LOWERCASE)
 
 # we check that the plugins base dir is included in LAYERAPI2_LAYERS_PATH
 # (useful for custom plugins base dir during hotswapping for example)
 if args.plugins_base_dir is not None:
     plugins_base_dir = args.plugins_base_dir
 else:
-    plugins_base_dir = os.environ.get('MODULE_PLUGINS_BASE_DIR', None)
+    plugins_base_dir = os.environ.get('MFMODULE_PLUGINS_BASE_DIR', None)
 if plugins_base_dir is not None:
     if plugins_base_dir not in \
             os.environ.get('LAYERAPI2_LAYERS_PATH', '').split(':'):
@@ -60,7 +60,7 @@ if layer_dir is None:
     sys.exit(1)
 
 lw_args = ["--empty",
-           "--extra-env-prefix=%s_CURRENT_PLUGIN" % MODULE,
+           "--extra-env-prefix=%s_CURRENT_PLUGIN" % MFMODULE,
            "--layers=%s" % layer_name]
 if args.cwd:
     lw_args.append("--cwd")

@@ -14,10 +14,10 @@ from mfutil import mkdir_p_or_die, get_unique_hexa_identifier
 from mfutil.layerapi2 import LayerApi2Wrapper
 from configparser_extended import ExtendedConfigParser
 
-RUNTIME_HOME = os.environ.get('MODULE_RUNTIME_HOME', '/tmp')
+RUNTIME_HOME = os.environ.get('MFMODULE_RUNTIME_HOME', '/tmp')
 MFEXT_HOME = os.environ['MFEXT_HOME']
-MODULE_LOWERCASE = os.environ['MODULE_LOWERCASE']
-MODULE = os.environ['MODULE']
+MFMODULE_LOWERCASE = os.environ['MFMODULE_LOWERCASE']
+MFMODULE = os.environ['MFMODULE']
 SPEC_TEMPLATE = os.path.join(MFEXT_HOME, "share", "templates", "plugin.spec")
 PLUGIN_NAME_REGEXP = "^[A-Za-z0-9_-]+$"
 
@@ -54,7 +54,7 @@ def plugin_name_to_layerapi2_label(plugin_name):
          (string): the layerapi2 label.
 
     """
-    return "plugin_%s@%s" % (plugin_name, MODULE_LOWERCASE)
+    return "plugin_%s@%s" % (plugin_name, MFMODULE_LOWERCASE)
 
 
 def layerapi2_label_to_plugin_name(label):
@@ -67,7 +67,7 @@ def layerapi2_label_to_plugin_name(label):
 
     """
     if (not label.startswith("plugin_")) or \
-            (not label.endswith("@%s" % MODULE_LOWERCASE)):
+            (not label.endswith("@%s" % MFMODULE_LOWERCASE)):
         raise Exception("bad layerapi2_label: %s => is it really a plugin ?" %
                         label)
     return label[7:].split('@')[0]
@@ -99,16 +99,16 @@ class PluginsBaseDir(object):
 
     def __init__(self, plugins_base_dir=None):
         self.pbd = _get_plugins_base_dir(plugins_base_dir)
-        self.old_value = os.environ.get('MODULE_PLUGINS_BASE_DIR', None)
+        self.old_value = os.environ.get('MFMODULE_PLUGINS_BASE_DIR', None)
 
     def __enter__(self):
-        os.environ['MODULE_PLUGINS_BASE_DIR'] = self.pbd
+        os.environ['MFMODULE_PLUGINS_BASE_DIR'] = self.pbd
 
     def __exit__(self, *args, **kwargs):
         if self.old_value is None:
-            del(os.environ['MODULE_PLUGINS_BASE_DIR'])
+            del(os.environ['MFMODULE_PLUGINS_BASE_DIR'])
         else:
-            os.environ['MODULE_PLUGINS_BASE_DIR'] = self.old_value
+            os.environ['MFMODULE_PLUGINS_BASE_DIR'] = self.old_value
 
 
 def inside_a_plugin_env():
@@ -118,7 +118,7 @@ def inside_a_plugin_env():
         (boolean): True if we are inside a plugin_env, False else
 
     """
-    return ("%s_CURRENT_PLUGIN_NAME" % MODULE) in os.environ
+    return ("%s_CURRENT_PLUGIN_NAME" % MFMODULE) in os.environ
 
 
 def layerapi2_label_file_to_plugin_name(llf_path):
@@ -201,15 +201,15 @@ def __get_logger():
 def get_plugins_base_dir():
     """Return the default plugins base directory path.
 
-    This value correspond to the content of MODULE_PLUGINS_BASE_DIR env var
+    This value correspond to the content of MFMODULE_PLUGINS_BASE_DIR env var
     or ${RUNTIME_HOME}/var/plugins (if not set).
 
     Returns:
         (string): the default plugins base directory path.
 
     """
-    if "MODULE_PLUGINS_BASE_DIR" in os.environ:
-        return os.environ.get("MODULE_PLUGINS_BASE_DIR")
+    if "MFMODULE_PLUGINS_BASE_DIR" in os.environ:
+        return os.environ.get("MFMODULE_PLUGINS_BASE_DIR")
     return os.path.join(RUNTIME_HOME, "var", "plugins")
 
 
@@ -261,7 +261,7 @@ def is_plugins_base_initialized(plugins_base_dir=None):
     except for unit testing.
 
     The plugins base dir is stored by default in :
-    ${MODULE_RUNTIME_HOME}/var/plugins
+    ${MFMODULE_RUNTIME_HOME}/var/plugins
 
     Args:
         plugins_base_dir (string): alternate plugins base directory.
@@ -658,7 +658,7 @@ def build_plugin(plugin_path, plugins_base_dir=None):
     new_basename = \
         os.path.basename(plugin_path).replace("x86_64.rpm",
                                               "metwork.%s.plugin" %
-                                              MODULE_LOWERCASE)
+                                              MFMODULE_LOWERCASE)
     new_plugin_path = os.path.join(pwd, new_basename)
     shutil.move(plugin_path, new_plugin_path)
     shutil.rmtree(tmpdir, True)

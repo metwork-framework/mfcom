@@ -67,7 +67,7 @@ class TestCasePlugins(TestCase):
         d = os.path.dirname(tmp)
         self.assertEquals(d, os.getcwd())
         self.assertEquals(b, "bar-1-1.metwork.%s.plugin" %
-                          os.environ['MODULE_LOWERCASE'])
+                          os.environ['MFMODULE_LOWERCASE'])
 
     def test_install_plugin(self):
         tmp = build_plugin("%s/data/test_build_plugin" % TEST_DIRECTORY,

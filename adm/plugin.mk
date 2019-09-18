@@ -1,7 +1,7 @@
 .PHONY: freeze
 
 NAME:=$(shell cat .layerapi2_label |sed 's/^plugin_//g' |awk -F '@' '{print $$1;}')
-VERSION:=$(shell config.py config.ini general version |sed "s/{{MODULE_VERSION}}/$${MODULE_VERSION}/g")
+VERSION:=$(shell config.py config.ini general version |sed "s/{{MFMODULE_VERSION}}/$${MFMODULE_VERSION}/g")
 RELEASE:=1
 
 PREREQ:=.autorestart_includes .autorestart_excludes

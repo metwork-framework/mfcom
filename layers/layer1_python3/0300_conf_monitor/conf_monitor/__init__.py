@@ -12,9 +12,9 @@ from mfutil.plugins import get_installed_plugins, get_plugin_lock_path
 
 RUN = True
 LOGGER = getLogger("conf_monitor")
-MODULE_RUNTIME_HOME = os.environ.get('MODULE_RUNTIME_HOME', None)
-MODULE_RUNTIME_USER = os.environ.get('MODULE_RUNTIME_USER', None)
-MODULE_HOME = os.environ['MODULE_HOME']
+MFMODULE_RUNTIME_HOME = os.environ.get('MFMODULE_RUNTIME_HOME', None)
+MFMODULE_RUNTIME_USER = os.environ.get('MFMODULE_RUNTIME_USER', None)
+MFMODULE_HOME = os.environ['MFMODULE_HOME']
 
 
 def handler_stop_signals(signum, frame):
@@ -30,7 +30,7 @@ def init_signals():
 
 def is_status_running_or_error():
     try:
-        with open("%s/var/status" % MODULE_RUNTIME_HOME, 'r') as f:
+        with open("%s/var/status" % MFMODULE_RUNTIME_HOME, 'r') as f:
             status = f.read().strip()
     except Exception:
         status = "unknown"
@@ -67,26 +67,26 @@ def md5sumfile(path):
 
 
 def make_new_circus_conf():
-    new_circus_conf = "%s/tmp/tmp_circus_conf2" % MODULE_RUNTIME_HOME
+    new_circus_conf = "%s/tmp/tmp_circus_conf2" % MFMODULE_RUNTIME_HOME
     cmd = "_make_circus_conf >%s" % new_circus_conf
     BashWrapperOrRaise(cmd)
     return (new_circus_conf, md5sumfile(new_circus_conf))
 
 
 def make_new_crontab_conf():
-    new_crontab_conf = "%s/tmp/tmp_crontab_conf2" % MODULE_RUNTIME_HOME
+    new_crontab_conf = "%s/tmp/tmp_crontab_conf2" % MFMODULE_RUNTIME_HOME
     cmd = "_make_crontab.sh >%s" % new_crontab_conf
     BashWrapperOrRaise(cmd)
     return (new_crontab_conf, md5sumfile(new_crontab_conf))
 
 
 def get_old_circus_conf():
-    old_circus_conf = "%s/tmp/config_auto/circus.ini" % MODULE_RUNTIME_HOME
+    old_circus_conf = "%s/tmp/config_auto/circus.ini" % MFMODULE_RUNTIME_HOME
     return (old_circus_conf, md5sumfile(old_circus_conf))
 
 
 def get_old_crontab_conf():
-    old_crontab_conf = "%s/tmp/config_auto/crontab" % MODULE_RUNTIME_HOME
+    old_crontab_conf = "%s/tmp/config_auto/crontab" % MFMODULE_RUNTIME_HOME
     return (old_crontab_conf, md5sumfile(old_crontab_conf))
 
 
@@ -111,9 +111,9 @@ def deploy_crontab(old_conf, new_conf):
 
 def register_watches(ih, wds):
     paths = \
-        get_plugins_config_ini() + ["%s/config/nginx.conf" % MODULE_HOME,
-                                    "%s/config/circus.ini" % MODULE_HOME] + \
-        get_plugins_crontab() + ["%s/var/conf_monitor" % MODULE_RUNTIME_HOME]
+        get_plugins_config_ini() + ["%s/config/nginx.conf" % MFMODULE_HOME,
+                                    "%s/config/circus.ini" % MFMODULE_HOME] + \
+        get_plugins_crontab() + ["%s/var/conf_monitor" % MFMODULE_RUNTIME_HOME]
     for path in paths:
         register_watch(ih, wds, path)
     wds_to_unregister = []

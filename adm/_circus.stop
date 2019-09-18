@@ -13,9 +13,9 @@ from mfutil import kill_process_and_children
 from mfutil.cli import echo_ok, echo_nok, echo_warning, echo_running
 
 LOG = getLogger('_circus.stop')
-USER = os.environ.get('MODULE_RUNTIME_USER', None)
-MODULE_RUNTIME_HOME = os.environ.get('MODULE_RUNTIME_HOME', None)
-MODULE = os.environ['MODULE']
+USER = os.environ.get('MFMODULE_RUNTIME_USER', None)
+MFMODULE_RUNTIME_HOME = os.environ.get('MFMODULE_RUNTIME_HOME', None)
+MFMODULE = os.environ['MFMODULE']
 
 
 def get_circus_master_pids(verbose=True):
@@ -30,7 +30,7 @@ def get_circus_master_pids(verbose=True):
             if 'circusd' not in cmdline:
                 continue
             env = proc.environ()
-            if env.get('METWORK_LIST_PROCESSES_FORCE', None) != MODULE:
+            if env.get('METWORK_LIST_PROCESSES_FORCE', None) != MFMODULE:
                 continue
             pids.append(proc.pid)
         except Exception:

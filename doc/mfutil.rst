@@ -26,7 +26,7 @@ which are note in current modules, during documentation build.
 .. automodapi:: mfutil.plugins
    :include-all-objects:
    :skip: BashWrapper, BashWrapperException, BashWrapperOrRaise, ExtendedConfigParser, LayerApi2Wrapper
-   :skip: get_unique_hexa_identifier, mkdir_p_or_die, PluginsBaseDir, MFEXT_HOME, MODULE, MODULE_LOWERCASE, PLUGIN_NAME_REGEXP, RUNTIME_HOME, SPEC_TEMPLATE
+   :skip: get_unique_hexa_identifier, mkdir_p_or_die, PluginsBaseDir, MFEXT_HOME, MFMODULE, MFMODULE_LOWERCASE, PLUGIN_NAME_REGEXP, RUNTIME_HOME, SPEC_TEMPLATE
    :no-inheritance-diagram:
 
 .. automodapi:: mfutil.cli
