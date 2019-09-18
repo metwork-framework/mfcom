@@ -4,7 +4,7 @@ from __future__ import print_function
 import os
 
 
-HOME = os.environ['MODULE_HOME']
+HOME = os.environ['MFMODULE_HOME']
 
 if __name__ == '__main__':
 

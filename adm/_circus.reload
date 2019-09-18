@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ENDPOINT=$(env |grep "^${MODULE}_CIRCUS_ENDPOINT" |awk -F '=' '{print $2;}')
+ENDPOINT=$(env |grep "^${MFMODULE}_CIRCUS_ENDPOINT" |awk -F '=' '{print $2;}')
 
 _circus.status
 if test $? -ne 0; then

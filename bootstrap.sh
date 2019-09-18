@@ -26,7 +26,7 @@ MFCOM_VERSION=$("${MFEXT_HOME}/bin/guess_version.sh")
 export MFCOM_VERSION
 MFEXT_VERSION=$(cat "${MFEXT_HOME}/config/version")
 export MFEXT_VERSION
-export MODULE_VERSION=${MFCOM_VERSION}
+export MFMODULE_VERSION=${MFCOM_VERSION}
 
 
 if test "${1:-}" = "--help"; then
@@ -51,10 +51,10 @@ export MFEXT_HOME
 
 
 
-MODULE_HOME=$(get_abs_filename "${PREFIX}")
-export MODULE_HOME
-export MODULE=MFCOM
-export MODULE_LOWERCASE=mfcom
+MFMODULE_HOME=$(get_abs_filename "${PREFIX}")
+export MFMODULE_HOME
+export MFMODULE=MFCOM
+export MFMODULE_LOWERCASE=mfcom
 SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export SRC_DIR
 
@@ -75,13 +75,13 @@ echo "Making adm/root.mk..."
 rm -f adm/root.mk
 touch adm/root.mk
 
-echo "export MODULE := ${MODULE}" >>adm/root.mk
-echo "export MODULE_LOWERCASE := $(echo ${MODULE} | tr '[:upper:]' '[:lower:]')" >>adm/root.mk
+echo "export MFMODULE := ${MFMODULE}" >>adm/root.mk
+echo "export MFMODULE_LOWERCASE := $(echo ${MFMODULE} | tr '[:upper:]' '[:lower:]')" >>adm/root.mk
 echo "export LAYERAPI2_LAYERS_PATH := ${ROOT_LAYERAPI2_LAYERS_PATH}" >>adm/root.mk
 echo "export MFEXT_HOME := ${MFEXT_HOME}" >>adm/root.mk
 echo "export MFEXT_VERSION := ${MFEXT_VERSION}" >>adm/root.mk
-echo "export MODULE_HOME := ${MODULE_HOME}" >>adm/root.mk
-echo "export MODULE_VERSION := ${MFCOM_VERSION}" >>adm/root.mk
+echo "export MFMODULE_HOME := ${MFMODULE_HOME}" >>adm/root.mk
+echo "export MFMODULE_VERSION := ${MFCOM_VERSION}" >>adm/root.mk
 echo "export SRC_DIR := ${SRC_DIR}" >>adm/root.mk
 echo "ifeq (\$(FORCED_PATHS),)" >>adm/root.mk
 echo "  export PATH := ${ROOT_PATH}" >>adm/root.mk
@@ -97,7 +97,7 @@ echo "endif" >>adm/root.mk
     if test "${MODULE_HAS_HOME_DIR:-}" = "1"; then
     echo "export MODULE_HAS_HOME_DIR := 1" >>adm/root.mk
     fi
-    #echo "export PREFIX := ${MODULE_HOME}" >>adm/root.mk
+    #echo "export PREFIX := ${MFMODULE_HOME}" >>adm/root.mk
 
 
 # FIXME: do not hardcode this

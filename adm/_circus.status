@@ -11,8 +11,8 @@ if test $# -ne 0; then
   usage
   exit 1
 fi
-if test "${MODULE}" = ""; then
-  echo "ERROR: MODULE env var is empty"
+if test "${MFMODULE}" = ""; then
+  echo "ERROR: MFMODULE env var is empty"
   exit 1
 fi
 
@@ -20,14 +20,14 @@ fi
 RES=0
 
 # La chaine qui identifie le processus au sens d'un "pgrep -f"
-IDENTIFY="circusd.*${MODULE_RUNTIME_HOME}/tmp/config_auto/circus.ini"
+IDENTIFY="circusd.*${MFMODULE_RUNTIME_HOME}/tmp/config_auto/circus.ini"
 
-ENDPOINT=$(env |grep "^${MODULE}_CIRCUS_ENDPOINT" |awk -F '=' '{print $2;}')
+ENDPOINT=$(env |grep "^${MFMODULE}_CIRCUS_ENDPOINT" |awk -F '=' '{print $2;}')
 
 # Verification de la presence du daemon
 echo -n "- Checking circus status..."
 echo_running
-N=`pgrep -U ${MODULE_RUNTIME_USER} -f "${IDENTIFY}" |wc -l`
+N=`pgrep -U ${MFMODULE_RUNTIME_USER} -f "${IDENTIFY}" |wc -l`
 if test ${N} -gt 0; then
     timeout 30s _circusctl --endpoint ${ENDPOINT} --timeout=20 globaloptions >/dev/null 2>&1
     if test $? -eq 0; then

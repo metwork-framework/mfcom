@@ -1,7 +1,7 @@
 #!/bin/bash
 
 WATCHER=$1
-ENDPOINT=$(env |grep "^${MODULE}_CIRCUS_ENDPOINT" |awk -F '=' '{print $2;}')
+ENDPOINT=$(env |grep "^${MFMODULE}_CIRCUS_ENDPOINT" |awk -F '=' '{print $2;}')
 
 echo -n "- Scheduling stop of ${WATCHER}..."
 echo_running

@@ -11,14 +11,14 @@ from telegraf_unixsocket_client import TelegrafUnixSocketClient
 from mflog import getLogger
 from mfutil import BashWrapper
 
-MODULE_RUNTIME_HOME = os.environ["MODULE_RUNTIME_HOME"]
-SOCKET_PATH = os.path.join(MODULE_RUNTIME_HOME, "var", "telegraf.socket")
+MFMODULE_RUNTIME_HOME = os.environ["MFMODULE_RUNTIME_HOME"]
+SOCKET_PATH = os.path.join(MFMODULE_RUNTIME_HOME, "var", "telegraf.socket")
 LOGGER = getLogger("telegraf_collector_metwork_module")
-MODULE = os.environ['MODULE']
+MFMODULE = os.environ['MFMODULE']
 CMD = "list_metwork_processes.py --output-format=json --include-current-family"
 MONITORING_CMDLINE_PATTERNS = ['*telegraf*', '*list_metwork_processes*',
                                '*jsonlog2elasticsearch*']
-IS_MONITORING_MODULE = (MODULE in ['MFSYSMON', 'MFADMIN'])
+IS_MONITORING_MODULE = (MFMODULE in ['MFSYSMON', 'MFADMIN'])
 
 
 def is_cmdline_monitoring(cmdline):

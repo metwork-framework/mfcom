@@ -8,11 +8,11 @@ from mfutil.cli import echo_running, echo_ok
 from mfutil.plugins import get_plugin_hash, get_plugin_info, install_plugin, \
     uninstall_plugin
 
-MODULE = os.environ['MODULE']
-MODULE_RUNTIME_HOME = os.environ['MODULE_RUNTIME_HOME']
-MODULE_HOME = os.environ['MODULE_HOME']
+MFMODULE = os.environ['MFMODULE']
+MFMODULE_RUNTIME_HOME = os.environ['MFMODULE_RUNTIME_HOME']
+MFMODULE_HOME = os.environ['MFMODULE_HOME']
 EXTERNAL_PLUGINS_PATH = \
-    "/etc/metwork.config.d/%s/external_plugins" % MODULE.lower()
+    "/etc/metwork.config.d/%s/external_plugins" % MFMODULE.lower()
 
 
 def i_plugin(typ, name, fil):
@@ -30,7 +30,7 @@ def u_plugin(typ, name, fil):
 
 internal_plugins_to_check = []
 for key, value in os.environ.items():
-    begin = "%s_INTERNAL_PLUGINS_INSTALL_" % MODULE
+    begin = "%s_INTERNAL_PLUGINS_INSTALL_" % MFMODULE
     if key.startswith(begin):
         if value.strip() == "1":
             internal_plugins_to_check.append(key.replace(begin, "").lower())
@@ -43,11 +43,11 @@ for fil in glob.glob("%s/*.plugin" % EXTERNAL_PLUGINS_PATH):
 for plugin in internal_plugins_to_check:
     installed_hash = get_plugin_hash(plugin, mode="name")
     candidates = sorted(glob.glob("%s/share/plugins/%s-*.plugin" %
-                                  (MODULE_HOME, plugin)),
+                                  (MFMODULE_HOME, plugin)),
                         key=os.path.getmtime)
     if len(candidates) == 0:
         logging.critical("can't find an installation file for plugin %s "
-                         "in %s/share/plugins/" % (plugin, MODULE_HOME))
+                         "in %s/share/plugins/" % (plugin, MFMODULE_HOME))
         sys.exit(1)
     selected_file = candidates[-1]
     selected_hash = get_plugin_hash(selected_file, mode="file")

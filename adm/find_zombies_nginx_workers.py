@@ -8,13 +8,13 @@ import argparse
 from mflog import getLogger
 
 LOG = getLogger('kill_zombies_nginx_workers')
-USER = os.environ.get('MODULE_RUNTIME_USER', None)
+USER = os.environ.get('MFMODULE_RUNTIME_USER', None)
 if USER is None:
-    LOG.critical("can't read MODULE_RUNTIME_USER env var")
+    LOG.critical("can't read MFMODULE_RUNTIME_USER env var")
     sys.exit(1)
-MODULE_RUNTIME_HOME = os.environ.get('MODULE_RUNTIME_HOME', None)
-if MODULE_RUNTIME_HOME is None:
-    LOG.critical("can't read MODULE_RUNTIME_HOME env var")
+MFMODULE_RUNTIME_HOME = os.environ.get('MFMODULE_RUNTIME_HOME', None)
+if MFMODULE_RUNTIME_HOME is None:
+    LOG.critical("can't read MFMODULE_RUNTIME_HOME env var")
     sys.exit(1)
 
 
@@ -36,7 +36,7 @@ def get_pids():
                 # we can have some exceptions here in some edge cases
                 LOG.debug("exception catched #1")
                 pass
-            if not cwd.startswith(MODULE_RUNTIME_HOME):
+            if not cwd.startswith(MFMODULE_RUNTIME_HOME):
                 continue
             pids.append(proc.pid)
         except Exception:

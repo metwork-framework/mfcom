@@ -10,19 +10,19 @@ import json
 from mflog import getLogger
 
 LOG = getLogger('list_metwork_processes')
-USER = os.environ.get('MODULE_RUNTIME_USER', None)
-MODULE = os.environ.get('MODULE', None)
-MODULE_RUNTIME_HOME = os.environ.get('MODULE_RUNTIME_HOME', None)
-MODULE_RUNTIME_HOME_TMP = MODULE_RUNTIME_HOME + "/tmp" if MODULE_RUNTIME_HOME \
+USER = os.environ.get('MFMODULE_RUNTIME_USER', None)
+MFMODULE = os.environ.get('MFMODULE', None)
+MFMODULE_RUNTIME_HOME = os.environ.get('MFMODULE_RUNTIME_HOME', None)
+MFMODULE_RUNTIME_HOME_TMP = MFMODULE_RUNTIME_HOME + "/tmp" if MFMODULE_RUNTIME_HOME \
     is not None else None
 if USER is None:
-    LOG.critical("can't read MODULE_RUNTIME_USER env var")
+    LOG.critical("can't read MFMODULE_RUNTIME_USER env var")
     sys.exit(1)
-if MODULE is None:
-    LOG.critical("can't read MODULE env var")
+if MFMODULE is None:
+    LOG.critical("can't read MFMODULE env var")
     sys.exit(1)
 CURRENT_PROCESS = psutil.Process()
-CURRENT_PLUGIN_ENV_VAR = "%s_CURRENT_PLUGIN_NAME" % MODULE
+CURRENT_PLUGIN_ENV_VAR = "%s_CURRENT_PLUGIN_NAME" % MFMODULE
 
 
 def is_same_family(child, proc):
@@ -38,7 +38,7 @@ def is_same_family(child, proc):
 
 
 def get_processes(exclude_same_family=CURRENT_PROCESS, exclude_terminal=True,
-                  include_cwd_startswith=MODULE_RUNTIME_HOME_TMP,
+                  include_cwd_startswith=MFMODULE_RUNTIME_HOME_TMP,
                   include_children=True):
     def add_process(processes, proc, plugin_name):
         if proc.pid in [x.pid for x, _ in processes]:
@@ -67,7 +67,7 @@ def get_processes(exclude_same_family=CURRENT_PROCESS, exclude_terminal=True,
             metwork_plugin_name = env[CURRENT_PLUGIN_ENV_VAR]
         else:
             metwork_plugin_name = ""
-        if env.get('METWORK_LIST_PROCESSES_FORCE', None) == MODULE:
+        if env.get('METWORK_LIST_PROCESSES_FORCE', None) == MFMODULE:
             add_process(processes, proc, metwork_plugin_name)
             continue
         if env.get('METWORK_LIST_PROCESSES_FORCE', None) == '0':
@@ -82,9 +82,9 @@ def get_processes(exclude_same_family=CURRENT_PROCESS, exclude_terminal=True,
             if cwd.startswith(include_cwd_startswith):
                 add_process(processes, proc, metwork_plugin_name)
                 continue
-        if 'MODULE' not in env:
+        if 'MFMODULE' not in env:
             continue
-        if env['MODULE'] != MODULE:
+        if env['MFMODULE'] != MFMODULE:
             continue
         add_process(processes, proc, metwork_plugin_name)
     return processes

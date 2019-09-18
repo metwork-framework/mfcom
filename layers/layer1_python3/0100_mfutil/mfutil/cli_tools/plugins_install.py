@@ -19,7 +19,7 @@ def main():
     arg_parser.add_argument("--plugins-base-dir", type=str, default=None,
                             help="can be use to set an alternate "
                             "plugins-base-dir, if not set the value of "
-                            "MODULE_PLUGINS_BASE_DIR env var is used (or a "
+                            "MFMODULE_PLUGINS_BASE_DIR env var is used (or a "
                             "hardcoded standard value).")
     args = arg_parser.parse_args()
     if inside_a_plugin_env():
