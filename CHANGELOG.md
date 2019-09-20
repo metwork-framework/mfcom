@@ -9,6 +9,9 @@
 - layerapi2 is now in a dedicated repository
 
 
+### Bug Fixes
+- fix to ensure compatibily with existing plugins using old variables names
+
 
 
 
