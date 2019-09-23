@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# FIXME: fix to ensure compatibility with existing plugins using
+# old variables names MODULE* (to be removed)
+for var in MODULE MODULE_HOME MODULE_LOWERCASE MODULE_VERSION MODULE_STATUS MODULE_RUNTIME_HOME MODULE_RUNTIME_USER MODULE_RUNTIME_SUFFIX MODULE_PLUGINS_BASE_DIR; do
+    new_var="MF${var}"
+    if test "${!var}" = ""; then
+        eval "export ${var}=\"${!new_var}\""
+    fi
+done
+
 set -eu
 
 if ! test -s "${MFMODULE_HOME}/config/crontab"; then

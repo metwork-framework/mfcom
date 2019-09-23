@@ -4,7 +4,7 @@ echo -n "- Building crontab file..."
 echo_running
 _make_crontab.sh >"${MFMODULE_RUNTIME_HOME}/tmp/config_auto/crontab" 2>"${MFMODULE_RUNTIME_HOME}/tmp/crontab_errors.$$"
 if test $? -ne 0; then
-    echo_nok 
+    echo_nok
     echo_bold "ERROR: see ${MFMODULE_RUNTIME_HOME}/tmp/crontab_errors.$$ for details"
     exit 1
 fi
