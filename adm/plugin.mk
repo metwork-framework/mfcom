@@ -1,4 +1,4 @@
-.PHONY: freeze
+.PHONY: freeze clean prerelease_check all superclean
 
 NAME:=$(shell cat .layerapi2_label |sed 's/^plugin_//g' |awk -F '@' '{print $$1;}')
 VERSION:=$(shell config.py config.ini general version |sed "s/{{MODULE_VERSION}}/$${MODULE_VERSION}/g")
@@ -32,6 +32,8 @@ ifneq ("$(REQUIREMENTS2)","")
 endif
 ifneq ("$(wildcard package.json)","")
 	PREREQ+=package-lock.json
+	PREREQ+=node_modules
+    DEPLOY+=local/lib/node_modules
 endif
 LAYERS=$(shell cat .layerapi2_dependencies |tr '\n' ',' |sed 's/,$$/\n/')
 
@@ -95,7 +97,19 @@ package-lock.json: package.json
 	rm -f $@
 	export METWORK_LAYERS_PATH=`pwd`:$(METWORK_LAYERS_PATH) ; plugin_wrapper $(NAME) -- npm install
 
-release: clean $(PREREQ) custom
+node_modules: package-lock.json
+	rm -Rf node_modules
+	export LAYERAPI2_LAYERS_PATH=`pwd`:$(LAYERAPI2_LAYERS_PATH) ; plugin_wrapper $(NAME) -- npm install
+
+local/lib/node_modules:
+	rm -f local/lib/node_modules
+	mkdir -p local/lib
+	if test -d node_modules; then cd local/lib && ln -s ../../node_modules node_modules; fi
+
+prerelease_check:
+	@N=`plugins.info $(NAME) 2>/dev/null |wc -l` ; if test $${N} -gt 0; then echo "ERROR: please uninstall the plugin before doing 'make release'" ; exit 1; fi
+
+release: prerelease_check clean $(PREREQ) custom
 	layer_wrapper --empty --layers=$(LAYERS),python3@mfcom -- _plugins.make --show-plugin-path
 
 develop: $(PREREQ) custom $(DEPLOY)
