@@ -10,6 +10,7 @@
 
 
 ### Bug Fixes
+- fix some issues with node plugins
 - fix to ensure compatibily with existing plugins using old variables names
 
 
