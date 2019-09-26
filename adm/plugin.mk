@@ -99,7 +99,7 @@ package-lock.json: package.json
 
 node_modules: package-lock.json
 	rm -Rf node_modules
-	export LAYERAPI2_LAYERS_PATH=`pwd`:$(LAYERAPI2_LAYERS_PATH) ; plugin_wrapper $(NAME) -- npm install
+	export METWORK_LAYERS_PATH=`pwd`:$(METWORK_LAYERS_PATH) ; plugin_wrapper $(NAME) -- npm install
 
 local/lib/node_modules:
 	rm -f local/lib/node_modules
