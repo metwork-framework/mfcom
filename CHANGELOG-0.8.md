@@ -1,6 +1,17 @@
 # release_0.8 CHANGELOG
 
 
+## [Unreleased]
+
+### New Features
+
+
+### Bug Fixes
+- fix some issues with node plugins
+
+
+
+
 
 ## v0.8.0 (2019-08-14)
 
