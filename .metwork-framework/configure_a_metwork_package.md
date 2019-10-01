@@ -1,8 +1,10 @@
-# How to configure mfcom metwork package ?
+# How to configure mfcom metwork module ?
+
+[//]: # (automatically generated from https://github.com/metwork-framework/resources/blob/master/cookiecutter/_%7B%7Bcookiecutter.repo%7D%7D/.metwork-framework/configure_a_metwork_package.md)
 
 ## General
 
-There are several ways to configure a metwork package (or a plugin).
+There are several ways to configure a metwork module (or a plugin).
 
 It mainly depends:
 
@@ -14,7 +16,7 @@ All these ways are not incompatible but in what follows, you will find our recom
 
 Please read everything from the beginning to be sure to really understand the configuration process.
 
-### How to configure a metwork package (mfserv, mfbase, mfdata...) during development process ?
+### How to configure a metwork module (mfserv, mfbase, mfdata...) during development process ?
 
 #### Find the module configuration file `config.ini`
 
@@ -31,7 +33,7 @@ Please make sure that your configuration file is not a symbolic link. In that pa
 
 The beginning of the file is something like that:
 
-```
+```cfg
 # THIS FILE OVERRIDES /opt/metwork-mfserv-master/config/config.ini CONFIGURATION FILE
 # DON'T CHANGE ANYTHING IN /opt/metwork-mfserv-master/config/config.ini FILE
 # DON'T REMOVE THE INCLUDE_config.ini LINE BELLOW
@@ -109,7 +111,7 @@ But again: if you don't do this, it won't break anything. But you can just miss 
 If you are working on a plugin named `foo` which need extra configuration variables, add a section to
 `${MFMODULE_RUNTIME_HOME}/config/config.ini` named `[plugin_foo]`. For example, for a `mfserv` plugin:
 
-```
+```cfg
 # [...]
 # At the end of ${MFMODULE_RUNTIME_HOME}/config/config.ini
 
@@ -151,7 +153,7 @@ KEY1_VALUE = os.environ.get("MFSERV_PLUGIN_%s_KEY1" % CURRENT_PLUGIN_NAME.upper(
                             "default_value")
 ```
 
-### How to configure a metwork package (mfserv, mfbase, mfdata...) during production deployment process ?
+### How to configure a metwork module (mfserv, mfbase, mfdata...) during production deployment process ?
 
 Of course, you can use the same way described above but we recommend another way for production deployment.
 
@@ -162,7 +164,7 @@ this directory by putting your changes in `/etc/metwork.config.d/{metwork_module
 
 For example, to change the listening port of `nginx` for `mfserv` module, just create the `/etc/metwork.config.d/mfserv/config.ini` file with following content:
 
-```
+```cfg
 # This file overrides default values available in /opt/metwork-mfserv/config/config.ini
 # DO NOT REMOVE THE FOLLOWING LINE
 [INCLUDE_config.ini]
@@ -182,7 +184,7 @@ After that, you have to configure your module through this `/etc` file.
 
 Exactly in the same way as for a module. Add your custom plugin section at the end of `/etc/metwork.config.d/mfserv/config.ini`. to continue with the previous examples:
 
-```
+```cfg
 # This file overrides default values available in /opt/metwork-mfserv/config/config.ini
 # DO NOT REMOVE THE FOLLOWING LINE
 [INCLUDE_config.ini]
@@ -199,3 +201,6 @@ key3=value3
 ```
 
 As previously said, a good plugin should use good default values in its code to avoid to crash if custom values are not set at all.
+
+
+Currently, there no way to override a step configuration parameter in a `[step_....]` section of a `config.ini` plugin configuration file. However, it will be available in a next version of Metwork. 
