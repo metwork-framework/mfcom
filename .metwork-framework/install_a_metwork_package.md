@@ -50,13 +50,28 @@ yum install metwork-mfext-layer-python2_devtools
 
 
 
+## Services
+
+You can start corresponding services with the root command:
+
+```bash
+service metwork start
+```
+
+Or you can also reboot your computer (because metwork services are started automatically on boot).
+
 
 
 ## Uninstall mfcom metwork module
 
 
-To uninstall mfcom metwork module, use the following command (still as `root` user):
+To uninstall mfcom metwork module, please stop corresponding metwork services with the `root` command:
 
+```bash
+service metwork stop mfcom
+```
+
+Then, use the following command (still as `root` user):
 
 
 ```bash
@@ -68,12 +83,22 @@ yum remove "metwork-mfcom*"
 To upgrade mfcom metwork module, use the following commands (still as `root` user):
 
 
+```bash
+# We stop mfcom services
+service metwork stop mfcom
+```
+
 
 ```bash
 # We upgrade mfcom metwork module
 yum upgrade "metwork-mfcom*"
 ```
 
+
+```bash
+# We start mfcom services
+service metwork start mfcom
+```
 
 
 ## Uninstall all metwork modules

@@ -8,6 +8,8 @@
 
 
     
+        
+        
     
 
 
@@ -64,11 +66,27 @@ publish_ci_common: &publish_ci_common
     - /private:/private
     - /buildcache:/buildcache
 
+integration_tests_common: &integration_tests_common
+  commands:
+    - if test "$${FORCED_OS_VERSION}" != ""; then if test "$${FORCED_OS_VERSION}" != "${OS_VERSION}"; then echo "step bypass"; exit 0; fi; fi
+    - if test -f .drone_downstream_bypass; then echo "step bypass"; exit 0; fi
+
+    - echo -e "[metwork_$${DEP_BRANCH}]" >/etc/yum.repos.d/metwork.repo
+    - echo -e "name=Metwork Continuous Integration Branch $${DEP_BRANCH}" >> /etc/yum.repos.d/metwork.repo
+    - echo -e "baseurl=http://metwork-framework.org/pub/metwork/continuous_integration/rpms/$${DEP_BRANCH}/${OS_VERSION}/" >> /etc/yum.repos.d/metwork.repo
+    - echo -e "gpgcheck=0\n\enabled=1\n\metadata_expire=0\n" >>/etc/yum.repos.d/metwork.repo
+    - yum -y localinstall metwork-mfcom*.rpm
+    - yum -y install make
+    - su --command="mfcom.init" - mfcom
+    - su --command="mfcom.start" - mfcom
+    - su --command="mfcom.status" - mfcom
+    - if test -d "integration_tests"; then chown -R mfcom integration_tests; cd integration_tests; su --command="cd `pwd`; ./run_integration_tests.sh" - mfcom; cd ..; fi
+    - su --command="mfcom.stop" - mfcom
 
 
 pipeline:
   bootstrap_integration_push:
-    image: metwork/mfcom-${OS_VERSION}-buildimage:integration
+    image: metwork/mfxxx-${OS_VERSION}-buildimage:integration
     environment:
       - DEP_DIR=master
       - TARGET_DIR=master
@@ -78,7 +96,7 @@ pipeline:
       branch: [ integration, ci_*, pci_* ]
 
   bootstrap_integration_pr:
-    image: metwork/mfcom-${OS_VERSION}-buildimage:integration
+    image: metwork/mfxxx-${OS_VERSION}-buildimage:integration
     environment:
       - TARGET_DIR=master
       - DEP_DIR=master
@@ -87,7 +105,7 @@ pipeline:
       event: pull_request
       branch: integration
   bootstrap_integration_pr_release:
-    image: metwork/mfcom-${OS_VERSION}-buildimage:${DRONE_BRANCH}
+    image: metwork/mfxxx-${OS_VERSION}-buildimage:${DRONE_BRANCH}
     environment:
       - TARGET_DIR=${DRONE_BRANCH##release_}
       - DEP_DIR=${DRONE_BRANCH##release_}
@@ -97,7 +115,7 @@ pipeline:
       branch: [ release_* ]
 
   bootstrap:
-    image: metwork/mfcom-${OS_VERSION}-buildimage:${DRONE_BRANCH}
+    image: metwork/mfxxx-${OS_VERSION}-buildimage:${DRONE_BRANCH}
     environment:
       - DEP_DIR=${DRONE_BRANCH##release_}
       - TARGET_DIR=${DRONE_BRANCH##release_}
@@ -106,7 +124,7 @@ pipeline:
       event: push
       branch: [ master, experimental*, release_* ]
   bootstrap_tag:
-    image: metwork/mfcom-${OS_VERSION}-buildimage:${DRONE_BRANCH}
+    image: metwork/mfxxx-${OS_VERSION}-buildimage:${DRONE_BRANCH}
     environment:
       - DEP_DIR=${DRONE_BRANCH##release_}
       - TARGET_DIR=${DRONE_BRANCH##release_}
@@ -118,7 +136,7 @@ pipeline:
 
   build_integration_pr:
     <<: *build_common
-    image: metwork/mfcom-${OS_VERSION}-buildimage:integration
+    image: metwork/mfxxx-${OS_VERSION}-buildimage:integration
     environment:
       - TARGET_DIR=master
       - DEP_BRANCH=integration
@@ -129,7 +147,7 @@ pipeline:
 
   build_integration:
     <<: *build_common
-    image: metwork/mfcom-${OS_VERSION}-buildimage:integration
+    image: metwork/mfxxx-${OS_VERSION}-buildimage:integration
     environment:
       - TARGET_DIR=master
       - DEP_BRANCH=integration
@@ -144,7 +162,7 @@ pipeline:
 
   build_pr:
     <<: *build_common
-    image: metwork/mfcom-${OS_VERSION}-buildimage:${DRONE_BRANCH}
+    image: metwork/mfxxx-${OS_VERSION}-buildimage:${DRONE_BRANCH}
     environment:
       - TARGET_DIR=${DRONE_BRANCH##release_}
       - DEP_BRANCH=${DRONE_BRANCH}
@@ -155,7 +173,7 @@ pipeline:
 
   build:
     <<: *build_common
-    image: metwork/mfcom-${OS_VERSION}-buildimage:${DRONE_BRANCH}
+    image: metwork/mfxxx-${OS_VERSION}-buildimage:${DRONE_BRANCH}
     environment:
       - TARGET_DIR=${DRONE_BRANCH##release_}
       - DEP_BRANCH=${DRONE_BRANCH}
@@ -169,7 +187,7 @@ pipeline:
 
   build_tag:
     <<: *build_common
-    image: metwork/mfcom-${OS_VERSION}-buildimage:${DRONE_BRANCH}
+    image: metwork/mfxxx-${OS_VERSION}-buildimage:${DRONE_BRANCH}
     environment:
       - TARGET_DIR=${DRONE_BRANCH##release_}
       - DEP_BRANCH=${DRONE_BRANCH}
@@ -181,17 +199,40 @@ pipeline:
       event: tag
       ref: refs/tags/v*
 
+  integration_tests_integration:
+    <<: *integration_tests_common
+    
+    image: metwork/mfxxx-${OS_VERSION}-testimage:integration
+    
+    environment:
+      - DEP_BRANCH=integration
+    when:
 
+      event: [push, pull_request]
+
+      branch: [ integration, ci_*, pci_* ]
+  integration_tests:
+    <<: *integration_tests_common
+    
+    image: metwork/mfxxx-${OS_VERSION}-testimage:${DRONE_BRANCH}
+    
+    environment:
+      - DEP_BRANCH=${DRONE_BRANCH}
+    when:
+
+      event: [push, pull_request]
+
+      branch: [  master, release_*, experimental* ]
 
   publish_ci_integration:
     <<: *publish_ci_common
-    image: metwork/mfcom-${OS_VERSION}-buildimage:integration
+    image: metwork/mfxxx-${OS_VERSION}-buildimage:integration
     when:
       event: push
       branch: [ integration, pci_* ]
   publish_ci:
     <<: *publish_ci_common
-    image: metwork/mfcom-${OS_VERSION}-buildimage:${DRONE_BRANCH}
+    image: metwork/mfxxx-${OS_VERSION}-buildimage:${DRONE_BRANCH}
     when:
       event: push
       branch: [ master, experimental*, release_* ]
@@ -230,17 +271,6 @@ pipeline:
     when:
       event: tag
       ref: refs/tags/v*
-
-
-  trigger_mfxxxbuildimage:
-    image: metwork/drone-downstream-specific-image:latest
-    secrets: [ downstream_server, downstream_token ]
-    repositories:
-      - metwork-framework/docker-mfxxx-${OS_VERSION}-buildimage@${DRONE_BRANCH}
-    when:
-      status: success
-      event: push
-      branch: [ master, integration, experimental*, release_* ]
 
 
 
